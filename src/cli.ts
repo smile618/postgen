@@ -40,7 +40,7 @@ function resolveOutPath(template: BuiltinTemplate, out?: string, stableName?: bo
 }
 
 await yargs(hideBin(process.argv))
-  .scriptName('ximg')
+  .scriptName('postgen')
   .command(
     'render',
     '根据 JSON 数据渲染 PNG',
