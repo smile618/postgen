@@ -9,10 +9,10 @@
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc -p tsconfig.json",
-    "render:example": "tsx src/cli.ts render --template cover-01 --data examples/cover.json --out ./out/download/xiaohongshu/cover.png",
-    "render:list": "tsx src/cli.ts render --template card-b --data examples/list.json --out ./out/download/xiaohongshu/list.png",
-    "render:xhs-note": "tsx src/cli.ts render --template xhs-note --data examples/xhs-note.json --out ./out/download/xiaohongshu/xhs-note.png --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
-    "render:xhs-note-green": "tsx src/cli.ts render --template xhs-note-green --data examples/xhs-note-green.json --out ./out/download/xiaohongshu/xhs-note-green.png --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf"
+    "render:example": "tsx src/cli.ts render --template cover-01 --data examples/cover.json --stable-name",
+    "render:xhs-note": "tsx src/cli.ts render --template xhs-note --data examples/xhs-note.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
+    "render:xhs-note-green": "tsx src/cli.ts render --template xhs-note-green --data examples/xhs-note-green.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
+    "template:list": "tsx src/cli.ts template --action list"
   },
   "keywords": [
     "satori",

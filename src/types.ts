@@ -1,5 +1,6 @@
-export const BUILTIN_TEMPLATES = ['cover-01', 'cover-a', 'card-b', 'poster-c', 'xhs-note', 'xhs-note-green'] as const;
-export type BuiltinTemplate = (typeof BUILTIN_TEMPLATES)[number];
+export const BUILTIN_TEMPLATES = ['cover-01', 'xhs-note', 'xhs-note-green'] as const;
+export type TemplateName = (typeof BUILTIN_TEMPLATES)[number];
+export type BuiltinTemplate = TemplateName;
 
 export type ThemeName = 'black' | 'white' | 'yellow' | 'mint';
 

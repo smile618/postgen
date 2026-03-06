@@ -2,28 +2,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
-import { z } from 'zod';
-import { renderTemplate } from './templates.js';
 import type { BuiltinTemplate, RenderInput } from './types.js';
+import { getTemplate } from './templates/registry.js';
 
 const TWEMOJI_ASSET_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg';
 
-const inputSchema = z.object({
-  title: z.string().min(1),
-  subtitle: z.string().optional(),
-  bullets: z.array(z.string()).optional(),
-  footer: z.string().optional(),
-  theme: z.enum(['black', 'white', 'yellow', 'mint']).optional(),
-  icon: z.string().optional(),
-  label: z.string().optional(),
-  day: z.string().optional(),
-  serial: z.string().optional(),
-});
-
-export async function loadInput(dataPath: string): Promise<RenderInput> {
+export async function loadInput(dataPath: string, template: BuiltinTemplate): Promise<RenderInput> {
   const raw = await fs.readFile(dataPath, 'utf8');
   const json = JSON.parse(raw);
-  return inputSchema.parse(json);
+  const def = getTemplate(template);
+  return def.schema.parse(json);
 }
 
 async function loadFont(fontPath: string) {
@@ -61,7 +49,7 @@ export async function renderToPng(params: {
   const regularData = await loadFont(params.fontRegularPath);
   const boldData = params.fontBoldPath ? await loadFont(params.fontBoldPath) : undefined;
 
-  const element = renderTemplate(params.template, params.input);
+  const element = getTemplate(params.template).render(params.input);
 
   const svg = await satori(element as any, {
     width: params.width,

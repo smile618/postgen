@@ -1,42 +1,124 @@
 # ximg-cli
 
-A tiny **JSON -> PNG** renderer (no browser) using **Satori (HTML/CSS/JSX -> SVG)** + **Resvg (SVG -> PNG)**.
+一个模板驱动的 **JSON -> PNG** CLI，使用 **Satori (JSX -> SVG)** + **Resvg (SVG -> PNG)**。
 
-## Install
+定位很简单：
+- 输入一个 JSON 文件
+- 选择一个模板
+- 输出一张 PNG 图片
+
+适合做：
+- 小红书卡片
+- 标题海报
+- 问答卡
+- 榜单图
+- 摘要图
+
+## 安装
 
 ```bash
 npm i
+npm run build
 ```
 
-## Render examples
+## CLI 风格
+
+保持 fly 目录里其他 CLI 的子命令形式，核心命令为：
 
 ```bash
-npm run render:example
-npm run render:list
+ximg template --action list
+ximg template --action show --name xhs-note
+ximg render --template xhs-note --data ./examples/xhs-note.json
 ```
 
-Outputs:
-- `out/cover.png`
-- `out/list.png`
+## 使用方法
 
-## CLI usage
-
-Dev run:
+### 查看模板列表
 
 ```bash
-npx tsx src/cli.ts render \
-  --template cover-01 \
-  --data examples/cover.json \
-  --out out/cover.png
+ximg template --action list
+ximg template --action list --json
 ```
 
-Options:
-- `--template`: `cover-01` | `list-01`
-- `--width` / `--height`: default `1080x1440`
-- `--font`: regular font path (optional; best-effort auto-detect on macOS)
-- `--fontBold`: optional
+### 查看某个模板详情
 
-## Notes
+```bash
+ximg template --action show --name xhs-note
+ximg template --action show --name xhs-note-green
+```
 
-- For consistent Chinese rendering, **prefer providing a font file** via `--font`.
-- This is a template-driven renderer; add new templates in `src/templates.tsx`.
+### 初始化模板示例 JSON
+
+```bash
+ximg template --action init --name xhs-note
+ximg template --action init --name xhs-note --out ./note.json
+```
+
+### 渲染图片
+
+```bash
+ximg render --template xhs-note --data ./examples/xhs-note.json
+ximg render --template xhs-note-green --data ./examples/xhs-note-green.json
+```
+
+默认会输出到：
+
+```bash
+./out/download/xiaohongshu/
+```
+
+默认文件名是带时间戳的：
+
+```bash
+xhs-note-YYYYMMDD-HHmmss.png
+```
+
+如果你想固定文件名，使用：
+
+```bash
+ximg render --template xhs-note --data ./examples/xhs-note.json --stable-name
+```
+
+### 指定输出路径
+
+```bash
+ximg render --template xhs-note --data ./examples/xhs-note.json --out ./out/test.png
+```
+
+### 指定字体
+
+```bash
+ximg render \
+  --template xhs-note \
+  --data ./examples/xhs-note.json \
+  --font ./fonts/extracted/PingFang-SC-Regular.ttf \
+  --fontBold ./fonts/extracted/PingFang-SC-Semibold.ttf
+```
+
+## 当前模板
+
+- `cover-01` - 简单封面卡片
+- `xhs-note` - 奶油黄 note 卡片
+- `xhs-note-green` - 绿色 note 卡片
+
+## 开发建议
+
+后续新增模板时，优先遵循这个约定：
+- 一个模板 = 一个注册项
+- 模板有自己的 description / default size / example path / schema / render
+- CLI 统一通过 `ximg render --template ... --data ...` 调用
+
+## 输出契约
+
+核心契约保持简单：
+
+- 输入：`template + json`
+- 输出：`png path`
+
+也就是：
+
+```bash
+ximg render --template <template> --data <json-file>
+```
+
+stdout 输出最终图片路径，方便脚本调用。
