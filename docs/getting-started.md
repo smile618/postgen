@@ -1,0 +1,44 @@
+# Getting Started
+
+## 安装
+
+```bash
+npm i
+npm run build
+npm link
+```
+
+## 最常用工作流
+
+1. 看模板列表
+
+```bash
+ximg template --action list
+```
+
+2. 导出示例 JSON
+
+```bash
+ximg template --action init --name xhs-note --out ./note.json
+```
+
+3. 修改 JSON 内容
+
+4. 渲染 PNG
+
+```bash
+ximg render --template xhs-note --data ./note.json
+```
+
+## 默认输出目录
+
+如果不传 `--out`，图片默认输出到：
+
+```bash
+./out/download/xiaohongshu/
+```
+
+## 文件命名
+
+- 默认：`<template>-YYYYMMDD-HHmmss.png`
+- 如果传 `--stable-name`：`<template>.png`

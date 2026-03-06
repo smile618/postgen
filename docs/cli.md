@@ -1,0 +1,35 @@
+# CLI
+
+## 查看模板列表
+
+```bash
+ximg template --action list
+ximg template --action list --json
+```
+
+## 查看模板详情
+
+```bash
+ximg template --action show --name xhs-note
+```
+
+## 输出模板示例 JSON
+
+```bash
+ximg template --action init --name xhs-note
+ximg template --action init --name xhs-note --out ./note.json
+```
+
+## 渲染图片
+
+```bash
+ximg render --template xhs-note --data ./note.json
+```
+
+### 常用参数
+
+- `--out`：指定输出路径
+- `--stable-name`：输出稳定文件名 `<template>.png`
+- `--width` / `--height`：覆盖模板默认尺寸
+- `--font`：指定常规字体路径
+- `--fontBold`：指定粗体字体路径
