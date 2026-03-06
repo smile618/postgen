@@ -64,3 +64,4 @@ postgen render --template xhs-note --data ./note.json
 - `cover-01`
 - `xhs-note`
 - `xhs-note-green`
+- `xhs-quote-blue`
