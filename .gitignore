@@ -2,6 +2,7 @@ node_modules/
 dist/
 out/
 .venv/
+fonts/
 preview.png
 *.log
 .DS_Store
