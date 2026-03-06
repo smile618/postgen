@@ -20,6 +20,8 @@ postgen template --action list
 
 ```bash
 postgen template --action init --name xhs-note --out ./note.json
+# 或：
+postgen template --action init --name xhs-quote-blue --out ./quote.json
 ```
 
 3. 修改 JSON 内容
@@ -28,6 +30,8 @@ postgen template --action init --name xhs-note --out ./note.json
 
 ```bash
 postgen render --template xhs-note --data ./note.json
+# 或：
+postgen render --template xhs-quote-blue --data ./quote.json
 ```
 
 ## 默认输出目录

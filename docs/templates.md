@@ -5,6 +5,7 @@
 - `cover-01`：简单封面卡片
 - `xhs-note`：奶油黄 note 卡片
 - `xhs-note-green`：绿色 note 卡片
+- `xhs-quote-blue`：浅蓝极简引用风卡片
 
 ## 设计原则
 
@@ -23,6 +24,7 @@ src/templates/
   cover-01.tsx
   xhs-note.tsx
   xhs-note-green.tsx
+  xhs-quote-blue.tsx
   registry.tsx
   schemas.ts
   shared.tsx

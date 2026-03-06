@@ -11,6 +11,7 @@ postgen template --action list --json
 
 ```bash
 postgen template --action show --name xhs-note
+postgen template --action show --name xhs-quote-blue
 ```
 
 ## 输出模板示例 JSON
@@ -18,12 +19,14 @@ postgen template --action show --name xhs-note
 ```bash
 postgen template --action init --name xhs-note
 postgen template --action init --name xhs-note --out ./note.json
+postgen template --action init --name xhs-quote-blue --out ./quote.json
 ```
 
 ## 渲染图片
 
 ```bash
 postgen render --template xhs-note --data ./note.json
+postgen render --template xhs-quote-blue --data ./quote.json
 ```
 
 ### 常用参数

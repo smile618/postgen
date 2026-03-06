@@ -33,12 +33,16 @@ postgen template --action list
 
 ```bash
 postgen template --action init --name xhs-note --out ./note.json
+# 或：
+postgen template --action init --name xhs-quote-blue --out ./quote.json
 ```
 
 渲染图片：
 
 ```bash
 postgen render --template xhs-note --data ./note.json
+# 或：
+postgen render --template xhs-quote-blue --data ./quote.json
 ```
 
 ## 默认输出目录
