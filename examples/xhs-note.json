@@ -1,0 +1,11 @@
+{
+  "title": "有 .git\n有 package.json\n有 src/\n有 dist/\n有 README.md",
+  "subtitle": "这个目录像是正式项目，不是随便放的文件夹。",
+  "bullets": [
+    "适合做小红书问答卡、结论卡、项目发现卡",
+    "大标题 + 大留白，比传统 dashboard 更适合截图传播"
+  ],
+  "footer": "~/Documents/fly/xiaohongshu",
+  "icon": "💻",
+  "label": "Text Note"
+}

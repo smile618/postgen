@@ -1,0 +1,7 @@
+node_modules/
+dist/
+out/
+.venv/
+preview.png
+*.log
+.DS_Store

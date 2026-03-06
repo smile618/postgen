@@ -1,0 +1,41 @@
+{
+  "name": "ximg-cli",
+  "version": "0.1.0",
+  "description": "JSON -> PNG CLI via satori + resvg",
+  "type": "module",
+  "bin": {
+    "ximg": "./dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsc -p tsconfig.json",
+    "render:example": "tsx src/cli.ts render --template cover-01 --data examples/cover.json --out ./out/download/xiaohongshu/cover.png",
+    "render:list": "tsx src/cli.ts render --template card-b --data examples/list.json --out ./out/download/xiaohongshu/list.png",
+    "render:xhs-note": "tsx src/cli.ts render --template xhs-note --data examples/xhs-note.json --out ./out/download/xiaohongshu/xhs-note.png --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf"
+  },
+  "keywords": [
+    "satori",
+    "resvg",
+    "og-image",
+    "poster",
+    "cli",
+    "json",
+    "png"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "react": "^19.2.4",
+    "satori": "^0.19.1",
+    "yargs": "^18.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.2",
+    "@types/react": "^19.2.13",
+    "@types/yargs": "^17.0.35",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
