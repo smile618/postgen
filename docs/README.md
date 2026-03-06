@@ -1,6 +1,6 @@
-# ximg-cli Docs
+# postgen Docs
 
-`ximg-cli` 是一个模板驱动的 **JSON -> PNG** 渲染工具。
+`postgen` 是一个模板驱动的 **JSON -> PNG** 渲染工具。
 
 核心目标很简单：
 - 输入一个 JSON 文件

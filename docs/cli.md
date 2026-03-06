@@ -3,27 +3,27 @@
 ## 查看模板列表
 
 ```bash
-ximg template --action list
-ximg template --action list --json
+postgen template --action list
+postgen template --action list --json
 ```
 
 ## 查看模板详情
 
 ```bash
-ximg template --action show --name xhs-note
+postgen template --action show --name xhs-note
 ```
 
 ## 输出模板示例 JSON
 
 ```bash
-ximg template --action init --name xhs-note
-ximg template --action init --name xhs-note --out ./note.json
+postgen template --action init --name xhs-note
+postgen template --action init --name xhs-note --out ./note.json
 ```
 
 ## 渲染图片
 
 ```bash
-ximg render --template xhs-note --data ./note.json
+postgen render --template xhs-note --data ./note.json
 ```
 
 ### 常用参数

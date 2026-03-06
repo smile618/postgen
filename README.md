@@ -1,4 +1,4 @@
-# ximg-cli
+# postgen
 
 一个模板驱动的 **JSON -> PNG** CLI。
 
@@ -26,19 +26,19 @@ npm link
 查看模板：
 
 ```bash
-ximg template --action list
+postgen template --action list
 ```
 
 导出模板示例：
 
 ```bash
-ximg template --action init --name xhs-note --out ./note.json
+postgen template --action init --name xhs-note --out ./note.json
 ```
 
 渲染图片：
 
 ```bash
-ximg render --template xhs-note --data ./note.json
+postgen render --template xhs-note --data ./note.json
 ```
 
 ## 默认输出目录

@@ -1,10 +1,10 @@
 {
-  "name": "ximg-cli",
+  "name": "postgen",
   "version": "0.1.0",
   "description": "JSON -> PNG CLI via satori + resvg",
   "type": "module",
   "bin": {
-    "ximg": "./dist/cli.js"
+    "postgen": "./dist/cli.js"
   },
   "scripts": {
     "dev": "tsx src/cli.ts",

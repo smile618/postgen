@@ -13,13 +13,13 @@ npm link
 1. 看模板列表
 
 ```bash
-ximg template --action list
+postgen template --action list
 ```
 
 2. 导出示例 JSON
 
 ```bash
-ximg template --action init --name xhs-note --out ./note.json
+postgen template --action init --name xhs-note --out ./note.json
 ```
 
 3. 修改 JSON 内容
@@ -27,7 +27,7 @@ ximg template --action init --name xhs-note --out ./note.json
 4. 渲染 PNG
 
 ```bash
-ximg render --template xhs-note --data ./note.json
+postgen render --template xhs-note --data ./note.json
 ```
 
 ## 默认输出目录

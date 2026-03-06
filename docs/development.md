@@ -21,7 +21,7 @@
 长期保持：
 
 ```bash
-ximg render --template <template> --data <json-file>
+postgen render --template <template> --data <json-file>
 ```
 
 stdout 只输出最终图片路径，方便脚本调用。
