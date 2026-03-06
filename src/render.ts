@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { renderTemplate } from './templates.js';
 import type { BuiltinTemplate, RenderInput } from './types.js';
 
+const TWEMOJI_ASSET_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg';
+
 const inputSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().optional(),
@@ -14,6 +16,8 @@ const inputSchema = z.object({
   theme: z.enum(['black', 'white', 'yellow', 'mint']).optional(),
   icon: z.string().optional(),
   label: z.string().optional(),
+  day: z.string().optional(),
+  serial: z.string().optional(),
 });
 
 export async function loadInput(dataPath: string): Promise<RenderInput> {
@@ -25,6 +29,24 @@ export async function loadInput(dataPath: string): Promise<RenderInput> {
 async function loadFont(fontPath: string) {
   const buf = await fs.readFile(fontPath);
   return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+}
+
+function toCodepoints(segment: string) {
+  return Array.from(segment)
+    .map((char) => char.codePointAt(0)?.toString(16))
+    .filter(Boolean)
+    .join('-');
+}
+
+async function fetchAsDataUrl(url: string) {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch asset: ${url} (${res.status})`);
+  }
+  const arrayBuffer = await res.arrayBuffer();
+  const contentType = res.headers.get('content-type') || 'image/svg+xml';
+  const base64 = Buffer.from(arrayBuffer).toString('base64');
+  return `data:${contentType};base64,${base64}`;
 }
 
 export async function renderToPng(params: {
@@ -48,6 +70,20 @@ export async function renderToPng(params: {
       { name: 'XFont', data: regularData, weight: 400 as any, style: 'normal' as any },
       ...(boldData ? [{ name: 'XFont', data: boldData, weight: 800 as any, style: 'normal' as any }] : []),
     ],
+    loadAdditionalAsset: async (code: string, segment: string) => {
+      if (code === 'emoji') {
+        const codepoints = toCodepoints(segment);
+        if (!codepoints) return '';
+
+        try {
+          return await fetchAsDataUrl(`${TWEMOJI_ASSET_BASE}/${codepoints}.svg`);
+        } catch {
+          return '';
+        }
+      }
+
+      return '';
+    },
   });
 
   const resvg = new Resvg(svg, {

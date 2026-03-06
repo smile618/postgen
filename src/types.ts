@@ -1,4 +1,4 @@
-export const BUILTIN_TEMPLATES = ['cover-01', 'cover-a', 'card-b', 'poster-c', 'xhs-note'] as const;
+export const BUILTIN_TEMPLATES = ['cover-01', 'cover-a', 'card-b', 'poster-c', 'xhs-note', 'xhs-note-green'] as const;
 export type BuiltinTemplate = (typeof BUILTIN_TEMPLATES)[number];
 
 export type ThemeName = 'black' | 'white' | 'yellow' | 'mint';
@@ -11,6 +11,8 @@ export interface RenderInput {
   theme?: ThemeName;
   icon?: string;
   label?: string;
+  day?: string;
+  serial?: string;
 }
 
 export interface RenderOptions {
