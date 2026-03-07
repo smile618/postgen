@@ -1,8 +1,8 @@
-export const BUILTIN_TEMPLATES = ['xhs-note', 'xhs-note-green', 'xhs-quote-blue', 'xhs-note-blue'] as const;
+export const BUILTIN_TEMPLATES = ['xhs-note', 'xhs-note-green', 'xhs-quote-blue'] as const;
 export type TemplateName = (typeof BUILTIN_TEMPLATES)[number];
 export type BuiltinTemplate = TemplateName;
 
-export type ThemeName = 'black' | 'white' | 'yellow' | 'mint';
+export type ThemeName = 'black' | 'white' | 'yellow' | 'mint' | 'cream' | 'blue';
 
 export interface RenderInput {
   title: string;

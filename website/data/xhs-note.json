@@ -6,5 +6,6 @@
     "Better for content screenshots than generic dashboards"
   ],
   "icon": "💻",
-  "label": "Text Note"
+  "label": "Text Note",
+  "theme": "cream"
 }

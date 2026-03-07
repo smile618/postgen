@@ -2,10 +2,9 @@
 
 ## 当前模板
 
-- `xhs-note`：奶油黄 note 卡片
+- `xhs-note`：主 Text Note 模板，支持 `cream` / `blue` 配色
 - `xhs-note-green`：绿色 note 卡片
 - `xhs-quote-blue`：浅蓝极简引用风卡片
-- `xhs-note-blue`：蓝底叠层 Text Note 卡片
 
 ## 设计原则
 
@@ -24,7 +23,6 @@ src/templates/
   xhs-note.tsx
   xhs-note-green.tsx
   xhs-quote-blue.tsx
-  xhs-note-blue.tsx
   registry.tsx
   schemas.ts
   shared.tsx

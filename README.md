@@ -32,9 +32,9 @@
 
 ![xhs-quote-blue showcase](./website/shots/xhs-quote-blue.png)
 
-### xhs-note-blue
+### xhs-note / blue
 
-![xhs-note-blue showcase](./website/shots/xhs-note-blue.png)
+![xhs-note blue showcase](./website/shots/xhs-note-blue.png)
 
 更多用于 README / 展示页的素材与示例数据放在：
 
@@ -82,10 +82,9 @@ postgen render --template xhs-quote-blue --data ./quote.json
 
 ## Current Templates
 
-- `xhs-note` — 奶油黄小红书 note 卡片
+- `xhs-note` — 主 Text Note 模板，当前支持 `cream` / `blue` 配色
 - `xhs-note-green` — 绿色小红书 note 卡片
 - `xhs-quote-blue` — 浅蓝极简引用风小红书卡片
-- `xhs-note-blue` — 蓝底叠层 Text Note 小红书卡片
 
 ## Docs
 
