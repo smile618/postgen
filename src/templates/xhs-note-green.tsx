@@ -1,6 +1,6 @@
 import type { TemplateDefinition } from './types.js';
 import { commonSchema } from './schemas.js';
-import { renderHugeTitle } from './shared.js';
+import { layoutTitle } from './text-layout.js';
 
 export const xhsNoteGreenTemplate: TemplateDefinition = {
   name: 'xhs-note-green',
@@ -10,7 +10,15 @@ export const xhsNoteGreenTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-note-green.json',
   schema: commonSchema,
   render: (input) => {
-    const titleLines = renderHugeTitle(input.title, 10);
+    const rawTitle = (input.title ?? '').trim();
+    const titleLayout = layoutTitle(rawTitle, {
+      maxCharsPerLine: 11,
+      maxLines: 4,
+      targetLines: 2,
+      keepWords: true,
+    });
+    const titleLines = titleLayout.lines;
+
     const noteLabel = input.label ?? 'Text Note';
     const weekday = input.day ?? 'Wednesday';
 
@@ -32,13 +40,13 @@ export const xhsNoteGreenTemplate: TemplateDefinition = {
                 }}
               >
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 760 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 22, maxWidth: 760 }}>
                     {titleLines.map((line, idx) => {
                       const trimmed = line.trim();
                       const isHighlight = idx === titleLines.length - 1;
                       return (
                         <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                          <div style={{ display: 'flex', fontSize: 76, fontWeight: 900, letterSpacing: -2.2, lineHeight: 1.06 }}>{trimmed}</div>
+                          <div style={{ display: 'flex', fontSize: 76, fontWeight: 900, letterSpacing: -2.2, lineHeight: 1.14, whiteSpace: 'nowrap', flexWrap: 'nowrap', maxWidth: '100%' }}>{trimmed}</div>
                           {isHighlight ? (
                             <div
                               style={{

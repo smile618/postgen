@@ -1,5 +1,6 @@
 import type { TemplateDefinition } from './types.js';
 import { commonSchema } from './schemas.js';
+import { layoutTitle } from './text-layout.js';
 
 export const xhsQuoteBlueTemplate: TemplateDefinition = {
   name: 'xhs-quote-blue',
@@ -9,12 +10,15 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-quote-blue.json',
   schema: commonSchema,
   render: (input) => {
-    const lines = (input.title ?? '')
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .slice(0, 4);
-    const titleLines = lines.length ? lines : [input.title ?? ''];
+    const rawTitle = (input.title ?? '').trim();
+    const titleLayout = layoutTitle(rawTitle, {
+      maxCharsPerLine: 12,
+      minCharsPerLine: 7,
+      maxLines: 4,
+      targetLines: 2,
+      keepWords: true,
+    });
+    const titleLines = titleLayout.lines;
 
     return (
       <div
@@ -49,7 +53,7 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
             position: 'absolute' as any,
             left: 118,
             top: 408,
-            width: 820,
+            width: 760,
             display: 'flex',
             flexDirection: 'column',
             gap: 52,
@@ -75,11 +79,15 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
                   style={{
                     display: 'flex',
                     position: 'relative' as any,
-                    fontSize: 112,
-                    lineHeight: 0.98,
-                    letterSpacing: -6,
+                    fontSize: 80,
+                    lineHeight: 1.14,
+                    letterSpacing: -4,
                     fontWeight: 900,
                     color: '#32353B',
+                    whiteSpace: 'nowrap',
+                    flexWrap: 'nowrap',
+                    overflow: 'hidden',
+                    maxWidth: '100%',
                   }}
                 >
                   {line}

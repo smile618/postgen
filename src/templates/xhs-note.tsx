@@ -1,5 +1,6 @@
 import type { TemplateDefinition } from './types.js';
 import { commonSchema } from './schemas.js';
+import { layoutTitle } from './text-layout.js';
 
 const xhsNoteThemes = {
   cream: {
@@ -38,18 +39,24 @@ export const xhsNoteTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-note.json',
   schema: commonSchema,
   render: (input) => {
-    const lines = (input.title ?? '')
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .slice(0, 5);
-    const titleLines = lines.length ? lines : [input.title ?? ''];
+    const rawTitle = (input.title ?? '').trim();
+    const titleLayout = layoutTitle(rawTitle, {
+      maxCharsPerLine: 9,
+      maxLines: 5,
+      targetLines: 3,
+      keepWords: true,
+    });
+    const titleLines = titleLayout.lines;
+
     const noteLabel = input.label ?? 'Text Note';
     const icon = input.icon ?? '💻';
     const subtitle = input.subtitle?.trim();
     const bullets = (input.bullets ?? []).slice(0, 2);
     const variant = input.theme === 'blue' ? 'blue' : 'cream';
     const theme = xhsNoteThemes[variant];
+    const hasWrappedTitle = titleLines.length > 1;
+    const titleGap = titleLines.length >= 3 ? 50 : hasWrappedTitle ? 40 : 24;
+    const titleLineHeight = titleLines.length >= 3 ? 1.16 : hasWrappedTitle ? 1.12 : 1.02;
 
     return (
       <div
@@ -115,7 +122,7 @@ export const xhsNoteTemplate: TemplateDefinition = {
           <div style={{ display: 'flex', flexDirection: 'column', marginTop: 118 }}>
             <div style={{ fontSize: 92, lineHeight: 1, marginLeft: theme.iconMarginLeft, marginBottom: 34 }}>{icon}</div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginLeft: theme.titleMarginLeft, maxWidth: 760 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: titleGap, marginLeft: theme.titleMarginLeft, maxWidth: 760 }}>
               {titleLines.map((line, idx) => {
                 const highlight = idx === 0 ? Math.min(2, Math.max(1, Math.floor(line.length / 2))) : 0;
                 const before = highlight ? line.slice(0, highlight) : line;
@@ -128,12 +135,14 @@ export const xhsNoteTemplate: TemplateDefinition = {
                     style={{
                       display: 'flex',
                       alignItems: 'flex-end',
-                      flexWrap: 'wrap' as any,
+                      flexWrap: 'nowrap' as any,
+                      whiteSpace: 'nowrap',
                       fontSize: 84,
-                      lineHeight: 1.02,
+                      lineHeight: titleLineHeight,
                       letterSpacing: -3.5,
                       fontWeight: 900,
                       color: theme.titleColor,
+                      maxWidth: '100%',
                     }}
                   >
                     {idx === 0 && highlight ? (

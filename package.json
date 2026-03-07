@@ -11,7 +11,8 @@
     "build": "tsc -p tsconfig.json",
     "render:xhs-note": "tsx src/cli.ts render --template xhs-note --data examples/xhs-note.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
     "render:xhs-note-green": "tsx src/cli.ts render --template xhs-note-green --data examples/xhs-note-green.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
-    "template:list": "tsx src/cli.ts template --action list"
+    "template:list": "tsx src/cli.ts template --action list",
+    "test": "vitest run"
   },
   "keywords": [
     "satori",
@@ -26,6 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
+    "conf": "^15.1.0",
     "react": "^19.2.4",
     "satori": "^0.19.1",
     "yargs": "^18.0.0",
@@ -36,6 +38,7 @@
     "@types/react": "^19.2.13",
     "@types/yargs": "^17.0.35",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }

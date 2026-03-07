@@ -6,8 +6,15 @@ import { hideBin } from 'yargs/helpers';
 import { BUILTIN_TEMPLATES, type BuiltinTemplate } from './types.js';
 import { loadInput, renderToPng } from './render.js';
 import { getTemplate, templateList } from './templates/registry.js';
+import { config, getOutputImageDir, makeBatchOutputDir, setOutputImageDir } from './config.js';
 
-const DEFAULT_OUTPUT_DIR = path.resolve(process.cwd(), 'out');
+const DEFAULT_BATCH_TARGETS = ['xhs-note:cream', 'xhs-note:blue', 'xhs-note-green', 'xhs-quote-blue'] as const;
+
+type RenderTarget = {
+  template: BuiltinTemplate;
+  theme?: string;
+  suffix: string;
+};
 
 function defaultFontGuess() {
   return [
@@ -36,7 +43,33 @@ function tsCompact() {
 function resolveOutPath(template: BuiltinTemplate, out?: string, stableName?: boolean) {
   if (out) return path.resolve(String(out));
   const filename = stableName ? `${template}.png` : `${template}-${tsCompact()}.png`;
-  return path.join(DEFAULT_OUTPUT_DIR, filename);
+  return path.join(getOutputImageDir(), filename);
+}
+
+function parseTarget(raw: string): RenderTarget {
+  const [templateRaw, themeRaw] = raw.split(':');
+  if (!templateRaw || !BUILTIN_TEMPLATES.includes(templateRaw as BuiltinTemplate)) {
+    throw new Error(`Invalid render target: ${raw}`);
+  }
+
+  const template = templateRaw as BuiltinTemplate;
+  const theme = themeRaw?.trim() || undefined;
+  const suffix = theme ? `${template}-${theme}` : template;
+
+  return { template, theme, suffix };
+}
+
+async function resolveFontRegularPath(args: any) {
+  const fontRegularPath =
+    (args.font ? path.resolve(String(args.font)) : undefined) ??
+    (await firstExisting(defaultFontGuess())) ??
+    '';
+
+  if (!fontRegularPath) {
+    throw new Error('No font found. Please pass --font /path/to/font.ttf');
+  }
+
+  return fontRegularPath;
 }
 
 await yargs(hideBin(process.argv))
@@ -89,15 +122,7 @@ await yargs(hideBin(process.argv))
       const outPath = resolveOutPath(template, args.out, args.stableName);
       const width = Number(args.width ?? def.defaultWidth);
       const height = Number(args.height ?? def.defaultHeight);
-
-      const fontRegularPath =
-        (args.font ? path.resolve(String(args.font)) : undefined) ??
-        (await firstExisting(defaultFontGuess())) ??
-        '';
-
-      if (!fontRegularPath) {
-        throw new Error('No font found. Please pass --font /path/to/font.ttf');
-      }
+      const fontRegularPath = await resolveFontRegularPath(args);
 
       const input = await loadInput(dataPath, template);
       await renderToPng({
@@ -111,6 +136,87 @@ await yargs(hideBin(process.argv))
       });
 
       process.stdout.write(outPath + '\n');
+    }
+  )
+  .command(
+    'render-many',
+    '用同一份数据批量渲染多张 PNG',
+    (cmd: any) =>
+      cmd
+        .option('data', {
+          type: 'string',
+          demandOption: true,
+          describe: '输入 JSON 路径',
+        })
+        .option('targets', {
+          type: 'string',
+          describe: '逗号分隔的目标列表，如 xhs-note:cream,xhs-note:blue,xhs-note-green,xhs-quote-blue',
+        })
+        .option('dir', {
+          type: 'string',
+          describe: '输出目录；不传则在默认目录下创建新的批次子目录',
+        })
+        .option('label', {
+          type: 'string',
+          default: 'batch',
+          describe: '批次目录名前缀',
+        })
+        .option('font', {
+          type: 'string',
+          describe: '常规字体路径 (ttf/otf/ttc)',
+        })
+        .option('fontBold', {
+          type: 'string',
+          describe: '粗体字体路径',
+        }),
+    async (args: any) => {
+      const dataPath = path.resolve(String(args.data));
+      const fontRegularPath = await resolveFontRegularPath(args);
+      const targets = String(args.targets || DEFAULT_BATCH_TARGETS.join(','))
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .map(parseTarget);
+
+      const baseDir = args.dir ? path.resolve(String(args.dir)) : getOutputImageDir();
+      const outDir = args.dir ? baseDir : makeBatchOutputDir(baseDir, String(args.label || 'batch'));
+      await fs.mkdir(outDir, { recursive: true });
+
+      const raw = await fs.readFile(dataPath, 'utf8');
+      const baseJson = JSON.parse(raw);
+      const results: Array<{ template: string; theme?: string; outPath: string }> = [];
+
+      for (const target of targets) {
+        const def = getTemplate(target.template);
+        const input = def.schema.parse({
+          ...baseJson,
+          ...(target.theme ? { theme: target.theme } : {}),
+        });
+        const outPath = path.join(outDir, `${target.suffix}.png`);
+
+        await renderToPng({
+          template: target.template,
+          input,
+          width: def.defaultWidth,
+          height: def.defaultHeight,
+          outPath,
+          fontRegularPath,
+          fontBoldPath: args.fontBold ? path.resolve(String(args.fontBold)) : undefined,
+        });
+
+        results.push({ template: target.template, theme: target.theme, outPath });
+      }
+
+      process.stdout.write(
+        JSON.stringify(
+          {
+            outDir,
+            results,
+          },
+          null,
+          2
+        ) + '\n'
+      );
     }
   )
   .command(
@@ -198,6 +304,76 @@ await yargs(hideBin(process.argv))
 
         process.stdout.write(content + '\n');
         return;
+      }
+    }
+  )
+  .command(
+    'config <action> [key] [value]',
+    '查看或设置本地配置',
+    (cmd: any) =>
+      cmd
+        .positional('action', {
+          type: 'string',
+          choices: ['get', 'set', 'list', 'reset'],
+          describe: '配置动作',
+        })
+        .positional('key', {
+          type: 'string',
+          describe: '配置键名',
+        })
+        .positional('value', {
+          type: 'string',
+          describe: '配置值',
+        }),
+    async (args: any) => {
+      const action = String(args.action);
+      const key = args.key ? String(args.key) : undefined;
+
+      if (action === 'list') {
+        process.stdout.write(
+          JSON.stringify(
+            {
+              'output.imageDir': getOutputImageDir(),
+            },
+            null,
+            2
+          ) + '\n'
+        );
+        return;
+      }
+
+      if (!key) {
+        throw new Error('config get/set/reset requires <key>');
+      }
+
+      if (action === 'get') {
+        process.stdout.write(String(config.get(key as 'output.imageDir') ?? '') + '\n');
+        return;
+      }
+
+      if (action === 'set') {
+        if (!args.value) {
+          throw new Error('config set requires <value>');
+        }
+
+        if (key === 'output.imageDir') {
+          const resolved = setOutputImageDir(String(args.value));
+          process.stdout.write(resolved + '\n');
+          return;
+        }
+
+        throw new Error(`Unsupported config key: ${key}`);
+      }
+
+      if (action === 'reset') {
+        if (key === 'output.imageDir') {
+          const fallback = path.resolve(process.cwd(), 'out');
+          config.set('output.imageDir', fallback);
+          process.stdout.write(fallback + '\n');
+          return;
+        }
+
+        throw new Error(`Unsupported config key: ${key}`);
       }
     }
   )

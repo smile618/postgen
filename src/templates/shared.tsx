@@ -44,6 +44,7 @@ export function renderHugeTitle(text: string, charsPerLine = 9) {
   return lines.slice(0, 6);
 }
 
+
 export const themes = {
   black: { bg: '#0B0F14', fg: '#F3F6FA', accent: '#7DD3FC', muted: 'rgba(243,246,250,0.72)' },
   white: { bg: '#FFFFFF', fg: '#0B0F14', accent: '#2563EB', muted: 'rgba(11,15,20,0.60)' },
