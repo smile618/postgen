@@ -47,10 +47,10 @@ postgen render --template xhs-quote-blue --data ./quote.json
 
 ## 默认输出目录
 
-如果不传 `--out`，默认输出到：
+如果不传 `--out`，默认输出到项目内的：
 
 ```bash
-./out/download/xiaohongshu/
+./out/
 ```
 
 ## 文档
@@ -65,7 +65,7 @@ postgen render --template xhs-quote-blue --data ./quote.json
 
 ## 当前模板
 
-- `cover-01`
 - `xhs-note`
 - `xhs-note-green`
 - `xhs-quote-blue`
+- `xhs-note-blue`

@@ -1,6 +1,5 @@
 import type { TemplateDefinition } from './types.js';
 import { commonSchema } from './schemas.js';
-import { clamp } from './shared.js';
 
 export const xhsQuoteBlueTemplate: TemplateDefinition = {
   name: 'xhs-quote-blue',
@@ -16,8 +15,6 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
       .filter(Boolean)
       .slice(0, 4);
     const titleLines = lines.length ? lines : [input.title ?? ''];
-    const footer = input.footer ? clamp(input.footer, 44) : '';
-    const label = input.label ?? 'weixiao';
 
     return (
       <div
@@ -92,57 +89,6 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
           })}
         </div>
 
-        <div
-          style={{
-            position: 'absolute' as any,
-            right: 78,
-            bottom: 72,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-            gap: 18,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <div
-              style={{
-                display: 'flex',
-                width: 74,
-                height: 12,
-                background: '#A7D2E7',
-                borderRadius: 1,
-              }}
-            />
-            <div
-              style={{
-                display: 'flex',
-                padding: '6px 14px',
-                borderRadius: 999,
-                background: 'rgba(255,255,255,0.36)',
-                color: 'rgba(255,255,255,0.75)',
-                fontSize: 12,
-                lineHeight: 1,
-                fontWeight: 700,
-                letterSpacing: 0.2,
-              }}
-            >
-              小红书
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 18,
-              lineHeight: 1.1,
-              color: 'rgba(255,255,255,0.5)',
-              textShadow: '0 1px 2px rgba(0,0,0,0.08)',
-              fontWeight: 500,
-            }}
-          >
-            {footer || `小红书号：${label}`}
-          </div>
-        </div>
       </div>
     );
   },

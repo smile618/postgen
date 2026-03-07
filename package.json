@@ -9,7 +9,6 @@
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc -p tsconfig.json",
-    "render:example": "tsx src/cli.ts render --template cover-01 --data examples/cover.json --stable-name",
     "render:xhs-note": "tsx src/cli.ts render --template xhs-note --data examples/xhs-note.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
     "render:xhs-note-green": "tsx src/cli.ts render --template xhs-note-green --data examples/xhs-note-green.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
     "template:list": "tsx src/cli.ts template --action list"

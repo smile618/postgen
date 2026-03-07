@@ -13,7 +13,6 @@ export const xhsNoteGreenTemplate: TemplateDefinition = {
     const titleLines = renderHugeTitle(input.title, 10);
     const noteLabel = input.label ?? 'Text Note';
     const weekday = input.day ?? 'Wednesday';
-    const serial = input.serial ?? '';
 
     return (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', padding: 54, background: '#2EBA77', color: '#000000' }}>
@@ -71,37 +70,6 @@ export const xhsNoteGreenTemplate: TemplateDefinition = {
           </div>
         </div>
 
-        {serial ? (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                color: 'rgba(255,255,255,0.82)',
-                fontSize: 15,
-                fontWeight: 500,
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 999,
-                  background: 'rgba(255,255,255,0.82)',
-                  color: '#1F9E67',
-                  padding: '4px 10px',
-                  fontSize: 14,
-                  fontWeight: 800,
-                }}
-              >
-                小红书
-              </div>
-              <div style={{ display: 'flex' }}>小红书号：{serial}</div>
-            </div>
-          </div>
-        ) : null}
       </div>
     );
   },

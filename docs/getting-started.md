@@ -39,7 +39,7 @@ postgen render --template xhs-quote-blue --data ./quote.json
 如果不传 `--out`，图片默认输出到：
 
 ```bash
-./out/download/xiaohongshu/
+./out/
 ```
 
 ## 文件命名

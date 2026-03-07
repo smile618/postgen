@@ -7,7 +7,7 @@ import { BUILTIN_TEMPLATES, type BuiltinTemplate } from './types.js';
 import { loadInput, renderToPng } from './render.js';
 import { getTemplate, templateList } from './templates/registry.js';
 
-const DEFAULT_OUTPUT_DIR = './out/download/xiaohongshu';
+const DEFAULT_OUTPUT_DIR = path.resolve(process.cwd(), 'out');
 
 function defaultFontGuess() {
   return [
