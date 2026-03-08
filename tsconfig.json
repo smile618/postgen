@@ -43,6 +43,8 @@
 
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-  }
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["dist", "test", "node_modules"]
 }

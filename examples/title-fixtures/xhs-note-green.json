@@ -1,0 +1,68 @@
+[
+  {
+    "name": "g01-1char",
+    "title": "绿",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g02-4char",
+    "title": "自由排版",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g03-8char",
+    "title": "把复杂问题讲简单",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g04-12char",
+    "title": "让用户第一眼记住你的标题",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g05-16char",
+    "title": "高质量的内容排版一定要先处理节奏而不是先处理细节",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g06-20char",
+    "title": "当一个标题开始根据长度自动变化字号时模板才算真的有了可复用性",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g07-30char",
+    "title": "很多时候用户不是不想看而是你的标题第一眼没有把信息和情绪组织成容易进入的阅读路径",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g08-40char",
+    "title": "如果一张卡片的标题在不同长度下总是需要手动微调那说明模板没有建立真正稳定的标题求解逻辑而只是暂时凑巧能看",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g09-50char",
+    "title": "你需要的不是一个能把字排进去的模板而是一套能根据标题长度中英混排和视觉空间动态收敛到合理字号行数和断句方式的统一排版引擎",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g10-cn-en-emoji",
+    "title": "用 openclaw🦞 帮女友做了一个沉浸无广的 2048 小游戏",
+    "label": "Text Note",
+    "day": "Wednesday"
+  },
+  {
+    "name": "g11-manual-lines",
+    "title": "使用VO\n帮女友开发了\n一个\n沉浸无广的\n2048小游戏",
+    "label": "Text Note",
+    "day": "Wednesday"
+  }
+]

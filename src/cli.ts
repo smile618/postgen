@@ -7,6 +7,8 @@ import { BUILTIN_TEMPLATES, type BuiltinTemplate } from './types.js';
 import { loadInput, renderToPng } from './render.js';
 import { getTemplate, templateList } from './templates/registry.js';
 import { config, getOutputImageDir, makeBatchOutputDir, setOutputImageDir } from './config.js';
+import { inspectTitleLayout, inspectTitleLayoutByTitle, loadTemplateInput } from './debug.js';
+import { buildFixtureInput, loadTitleFixtures } from './fixtures.js';
 
 const DEFAULT_BATCH_TARGETS = ['xhs-note:cream', 'xhs-note:blue', 'xhs-note-green', 'xhs-quote-blue'] as const;
 
@@ -217,6 +219,116 @@ await yargs(hideBin(process.argv))
           2
         ) + '\n'
       );
+    }
+  )
+  .command(
+    'debug-title',
+    '查看标题排版 solver 的候选结果与最终解',
+    (cmd: any) =>
+      cmd
+        .option('template', {
+          type: 'string',
+          choices: [...BUILTIN_TEMPLATES],
+          demandOption: true,
+          describe: '模板名称',
+        })
+        .option('data', {
+          type: 'string',
+          describe: '输入 JSON 路径',
+        })
+        .option('title', {
+          type: 'string',
+          describe: '直接传标题文本；支持用 \\n 表示换行',
+        })
+        .option('limit', {
+          type: 'number',
+          default: 5,
+          describe: '输出前 N 个候选解',
+        }),
+    async (args: any) => {
+      const template = args.template as BuiltinTemplate;
+      const hasData = Boolean(args.data);
+      const hasTitle = Boolean(args.title);
+
+      if (hasData === hasTitle) {
+        throw new Error('debug-title requires exactly one of --data or --title');
+      }
+
+      const inspected = hasTitle
+        ? inspectTitleLayoutByTitle(template, String(args.title), Number(args.limit ?? 5))
+        : inspectTitleLayout(template, await loadTemplateInput(String(args.data), template), Number(args.limit ?? 5));
+
+      process.stdout.write(JSON.stringify(inspected, null, 2) + '\n');
+    }
+  )
+  .command(
+    'render-fixtures',
+    '按模板批量渲染标题测试样本，输出到以模板名分组的目录',
+    (cmd: any) =>
+      cmd
+        .option('templates', {
+          type: 'string',
+          describe: '逗号分隔模板名；不传则渲染全部模板',
+        })
+        .option('dir', {
+          type: 'string',
+          describe: '输出目录；不传则输出到默认目录下的 fixture 批次目录',
+        })
+        .option('label', {
+          type: 'string',
+          default: 'fixtures',
+          describe: '批次目录名前缀',
+        })
+        .option('font', {
+          type: 'string',
+          describe: '常规字体路径 (ttf/otf/ttc)',
+        })
+        .option('fontBold', {
+          type: 'string',
+          describe: '粗体字体路径',
+        }),
+    async (args: any) => {
+      const fontRegularPath = await resolveFontRegularPath(args);
+      const templates = String(args.templates || BUILTIN_TEMPLATES.join(','))
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean) as BuiltinTemplate[];
+
+      const baseDir = args.dir ? path.resolve(String(args.dir)) : getOutputImageDir();
+      const outDir = args.dir ? baseDir : makeBatchOutputDir(baseDir, String(args.label || 'fixtures'));
+      await fs.mkdir(outDir, { recursive: true });
+
+      const results: Array<{ template: string; name: string; outPath: string }> = [];
+
+      for (const template of templates) {
+        if (!BUILTIN_TEMPLATES.includes(template)) {
+          throw new Error(`Invalid template: ${template}`);
+        }
+
+        const templateDir = path.join(outDir, template);
+        await fs.mkdir(templateDir, { recursive: true });
+        const fixtures = await loadTitleFixtures(template);
+        const def = getTemplate(template);
+
+        for (const fixture of fixtures) {
+          const input = def.schema.parse(buildFixtureInput(template, fixture));
+          const outPath = path.join(templateDir, `${fixture.name}.png`);
+
+          await renderToPng({
+            template,
+            input,
+            width: def.defaultWidth,
+            height: def.defaultHeight,
+            outPath,
+            fontRegularPath,
+            fontBoldPath: args.fontBold ? path.resolve(String(args.fontBold)) : undefined,
+          });
+
+          results.push({ template, name: fixture.name, outPath });
+        }
+      }
+
+      process.stdout.write(JSON.stringify({ outDir, count: results.length, results }, null, 2) + '\n');
     }
   )
   .command(

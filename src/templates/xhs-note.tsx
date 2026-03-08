@@ -1,6 +1,6 @@
 import type { TemplateDefinition } from './types.js';
 import { commonSchema } from './schemas.js';
-import { layoutTitle } from './text-layout.js';
+import { resolveTemplateTitleLayout } from './title-engine.js';
 
 const xhsNoteThemes = {
   cream: {
@@ -39,13 +39,7 @@ export const xhsNoteTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-note.json',
   schema: commonSchema,
   render: (input) => {
-    const rawTitle = (input.title ?? '').trim();
-    const titleLayout = layoutTitle(rawTitle, {
-      maxCharsPerLine: 9,
-      maxLines: 5,
-      targetLines: 3,
-      keepWords: true,
-    });
+    const titleLayout = resolveTemplateTitleLayout('xhs-note', input);
     const titleLines = titleLayout.lines;
 
     const noteLabel = input.label ?? 'Text Note';
@@ -56,7 +50,6 @@ export const xhsNoteTemplate: TemplateDefinition = {
     const theme = xhsNoteThemes[variant];
     const hasWrappedTitle = titleLines.length > 1;
     const titleGap = titleLines.length >= 3 ? 50 : hasWrappedTitle ? 40 : 24;
-    const titleLineHeight = titleLines.length >= 3 ? 1.16 : hasWrappedTitle ? 1.12 : 1.02;
 
     return (
       <div
@@ -137,8 +130,8 @@ export const xhsNoteTemplate: TemplateDefinition = {
                       alignItems: 'flex-end',
                       flexWrap: 'nowrap' as any,
                       whiteSpace: 'nowrap',
-                      fontSize: 84,
-                      lineHeight: titleLineHeight,
+                      fontSize: titleLayout.fontSize,
+                      lineHeight: titleLayout.lineHeight,
                       letterSpacing: -3.5,
                       fontWeight: 900,
                       color: theme.titleColor,

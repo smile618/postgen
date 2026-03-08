@@ -1,6 +1,6 @@
 import type { TemplateDefinition } from './types.js';
 import { commonSchema } from './schemas.js';
-import { layoutTitle } from './text-layout.js';
+import { resolveTemplateTitleLayout } from './title-engine.js';
 
 export const xhsNoteGreenTemplate: TemplateDefinition = {
   name: 'xhs-note-green',
@@ -10,13 +10,7 @@ export const xhsNoteGreenTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-note-green.json',
   schema: commonSchema,
   render: (input) => {
-    const rawTitle = (input.title ?? '').trim();
-    const titleLayout = layoutTitle(rawTitle, {
-      maxCharsPerLine: 11,
-      maxLines: 4,
-      targetLines: 2,
-      keepWords: true,
-    });
+    const titleLayout = resolveTemplateTitleLayout('xhs-note-green', input);
     const titleLines = titleLayout.lines;
 
     const noteLabel = input.label ?? 'Text Note';
@@ -46,7 +40,7 @@ export const xhsNoteGreenTemplate: TemplateDefinition = {
                       const isHighlight = idx === titleLines.length - 1;
                       return (
                         <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                          <div style={{ display: 'flex', fontSize: 76, fontWeight: 900, letterSpacing: -2.2, lineHeight: 1.14, whiteSpace: 'nowrap', flexWrap: 'nowrap', maxWidth: '100%' }}>{trimmed}</div>
+                          <div style={{ display: 'flex', fontSize: titleLayout.fontSize, fontWeight: 900, letterSpacing: -2.2, lineHeight: titleLayout.lineHeight, whiteSpace: 'nowrap', flexWrap: 'nowrap', maxWidth: '100%' }}>{trimmed}</div>
                           {isHighlight ? (
                             <div
                               style={{

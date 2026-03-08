@@ -1,6 +1,6 @@
 import type { TemplateDefinition } from './types.js';
 import { commonSchema } from './schemas.js';
-import { layoutTitle } from './text-layout.js';
+import { resolveTemplateTitleLayout } from './title-engine.js';
 
 export const xhsQuoteBlueTemplate: TemplateDefinition = {
   name: 'xhs-quote-blue',
@@ -10,14 +10,7 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-quote-blue.json',
   schema: commonSchema,
   render: (input) => {
-    const rawTitle = (input.title ?? '').trim();
-    const titleLayout = layoutTitle(rawTitle, {
-      maxCharsPerLine: 12,
-      minCharsPerLine: 7,
-      maxLines: 4,
-      targetLines: 2,
-      keepWords: true,
-    });
+    const titleLayout = resolveTemplateTitleLayout('xhs-quote-blue', input);
     const titleLines = titleLayout.lines;
 
     return (
@@ -79,9 +72,9 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
                   style={{
                     display: 'flex',
                     position: 'relative' as any,
-                    fontSize: 80,
-                    lineHeight: 1.14,
-                    letterSpacing: -4,
+                    fontSize: titleLayout.fontSize,
+                    lineHeight: titleLayout.lineHeight,
+                    letterSpacing: -6,
                     fontWeight: 900,
                     color: '#32353B',
                     whiteSpace: 'nowrap',
