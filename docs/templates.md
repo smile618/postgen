@@ -5,6 +5,13 @@
 - `xhs-note`：主 Text Note 模板，支持 `cream` / `blue` 配色
 - `xhs-note-green`：绿色 note 卡片
 - `xhs-quote-blue`：浅蓝极简引用风卡片
+- `apple-notes-handwrite`：Apple Notes 手写便签风格模板
+
+## 参考图新增模板工作流
+
+如果后续是通过“发一张参考图”来新增模板，完整流程见：
+
+- `docs/template-from-reference-workflow.md`
 
 ## 设计原则
 
