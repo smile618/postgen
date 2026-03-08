@@ -39,7 +39,7 @@ export const xhsNoteTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-note.json',
   schema: commonSchema,
   render: (input) => {
-    const titleLayout = resolveTemplateTitleLayout('xhs-note', input);
+    const titleLayout = input.__resolvedTitleLayout ?? resolveTemplateTitleLayout('xhs-note', input);
     const titleLines = titleLayout.lines;
 
     const noteLabel = input.label ?? 'Text Note';

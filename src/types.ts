@@ -4,6 +4,8 @@ export type BuiltinTemplate = TemplateName;
 
 export type ThemeName = 'black' | 'white' | 'yellow' | 'mint' | 'cream' | 'blue';
 
+export type TitleLayoutMode = 'rule' | 'llm';
+
 export interface RenderInput {
   title: string;
   subtitle?: string;
@@ -14,6 +16,14 @@ export interface RenderInput {
   label?: string;
   day?: string;
   serial?: string;
+  titleLayoutMode?: TitleLayoutMode;
+  __resolvedTitleLayout?: {
+    lines: string[];
+    fontSize: number;
+    lineHeight: number;
+    lineWidths: number[];
+    exceededMaxLines: boolean;
+  };
 }
 
 export interface RenderOptions {

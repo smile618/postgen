@@ -10,7 +10,7 @@ export const xhsNoteGreenTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-note-green.json',
   schema: commonSchema,
   render: (input) => {
-    const titleLayout = resolveTemplateTitleLayout('xhs-note-green', input);
+    const titleLayout = input.__resolvedTitleLayout ?? resolveTemplateTitleLayout('xhs-note-green', input);
     const titleLines = titleLayout.lines;
 
     const noteLabel = input.label ?? 'Text Note';

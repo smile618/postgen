@@ -6,9 +6,10 @@ import { hideBin } from 'yargs/helpers';
 import { BUILTIN_TEMPLATES, type BuiltinTemplate } from './types.js';
 import { loadInput, renderToPng } from './render.js';
 import { getTemplate, templateList } from './templates/registry.js';
-import { config, getOutputImageDir, makeBatchOutputDir, setOutputImageDir } from './config.js';
+import { config, getLlmConfig, getOutputImageDir, makeBatchOutputDir, resetConfigItem, setLlmConfigItem, setOutputImageDir } from './config.js';
 import { inspectTitleLayout, inspectTitleLayoutByTitle, loadTemplateInput } from './debug.js';
 import { buildFixtureInput, loadTitleFixtures } from './fixtures.js';
+import { resolveTemplateTitleLayoutAsync } from './templates/title-layout-service.js';
 
 const DEFAULT_BATCH_TARGETS = ['xhs-note:cream', 'xhs-note:blue', 'xhs-note-green', 'xhs-quote-blue'] as const;
 
@@ -116,6 +117,12 @@ await yargs(hideBin(process.argv))
         .option('fontBold', {
           type: 'string',
           describe: '粗体字体路径',
+        })
+        .option('title-layout-mode', {
+          type: 'string',
+          choices: ['rule', 'llm'],
+          default: 'rule',
+          describe: '标题拆分模式：rule=规则排版，llm=先用大模型建议断行再渲染',
         }),
     async (args: any) => {
       const template = args.template as BuiltinTemplate;
@@ -127,6 +134,7 @@ await yargs(hideBin(process.argv))
       const fontRegularPath = await resolveFontRegularPath(args);
 
       const input = await loadInput(dataPath, template);
+      input.titleLayoutMode = args.titleLayoutMode as 'rule' | 'llm';
       await renderToPng({
         template,
         input,
@@ -170,6 +178,12 @@ await yargs(hideBin(process.argv))
         .option('fontBold', {
           type: 'string',
           describe: '粗体字体路径',
+        })
+        .option('title-layout-mode', {
+          type: 'string',
+          choices: ['rule', 'llm'],
+          default: 'rule',
+          describe: '标题拆分模式：rule=规则排版，llm=先用大模型建议断行再渲染',
         }),
     async (args: any) => {
       const dataPath = path.resolve(String(args.data));
@@ -195,6 +209,7 @@ await yargs(hideBin(process.argv))
           ...(target.theme ? { theme: target.theme } : {}),
         });
         const outPath = path.join(outDir, `${target.suffix}.png`);
+        input.titleLayoutMode = args.titleLayoutMode as 'rule' | 'llm';
 
         await renderToPng({
           template: target.template,
@@ -286,6 +301,12 @@ await yargs(hideBin(process.argv))
         .option('fontBold', {
           type: 'string',
           describe: '粗体字体路径',
+        })
+        .option('title-layout-mode', {
+          type: 'string',
+          choices: ['rule', 'llm'],
+          default: 'rule',
+          describe: '标题拆分模式：rule=规则排版，llm=先用大模型建议断行再渲染',
         }),
     async (args: any) => {
       const fontRegularPath = await resolveFontRegularPath(args);
@@ -312,6 +333,7 @@ await yargs(hideBin(process.argv))
 
         for (const fixture of fixtures) {
           const input = def.schema.parse(buildFixtureInput(template, fixture));
+          input.titleLayoutMode = args.titleLayoutMode as 'rule' | 'llm';
           const outPath = path.join(templateDir, `${fixture.name}.png`);
 
           await renderToPng({
@@ -446,6 +468,10 @@ await yargs(hideBin(process.argv))
           JSON.stringify(
             {
               'output.imageDir': getOutputImageDir(),
+              'llm.enabled': Boolean(getLlmConfig()),
+              'llm.baseUrl': config.get('llm.baseUrl') ?? '',
+              'llm.model': config.get('llm.model') ?? '',
+              'llm.timeoutMs': config.get('llm.timeoutMs') ?? '',
             },
             null,
             2
@@ -474,14 +500,19 @@ await yargs(hideBin(process.argv))
           return;
         }
 
+        if (key === 'llm.apiKey' || key === 'llm.baseUrl' || key === 'llm.model' || key === 'llm.timeoutMs') {
+          const resolved = setLlmConfigItem(key, String(args.value));
+          process.stdout.write(String(resolved) + '\n');
+          return;
+        }
+
         throw new Error(`Unsupported config key: ${key}`);
       }
 
       if (action === 'reset') {
-        if (key === 'output.imageDir') {
-          const fallback = path.resolve(process.cwd(), 'out');
-          config.set('output.imageDir', fallback);
-          process.stdout.write(fallback + '\n');
+        if (key === 'output.imageDir' || key === 'llm.apiKey' || key === 'llm.baseUrl' || key === 'llm.model' || key === 'llm.timeoutMs') {
+          const resetValue = resetConfigItem(key as any);
+          process.stdout.write(String(resetValue) + '\n');
           return;
         }
 

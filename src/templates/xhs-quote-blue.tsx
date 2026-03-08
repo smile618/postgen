@@ -10,7 +10,7 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
   examplePath: 'examples/xhs-quote-blue.json',
   schema: commonSchema,
   render: (input) => {
-    const titleLayout = resolveTemplateTitleLayout('xhs-quote-blue', input);
+    const titleLayout = input.__resolvedTitleLayout ?? resolveTemplateTitleLayout('xhs-quote-blue', input);
     const titleLines = titleLayout.lines;
 
     const lineCount = titleLines.length;

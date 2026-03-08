@@ -4,6 +4,7 @@ import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 import type { BuiltinTemplate, RenderInput } from './types.js';
 import { getTemplate } from './templates/registry.js';
+import { resolveTemplateTitleLayoutAsync } from './templates/title-layout-service.js';
 
 const TWEMOJI_ASSET_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg';
 
@@ -49,7 +50,13 @@ export async function renderToPng(params: {
   const regularData = await loadFont(params.fontRegularPath);
   const boldData = params.fontBoldPath ? await loadFont(params.fontBoldPath) : undefined;
 
-  const element = getTemplate(params.template).render(params.input);
+  const titleLayout = await resolveTemplateTitleLayoutAsync(params.template, params.input);
+  const renderInput = {
+    ...params.input,
+    __resolvedTitleLayout: titleLayout,
+  } as RenderInput & { __resolvedTitleLayout?: Awaited<ReturnType<typeof resolveTemplateTitleLayoutAsync>> };
+
+  const element = getTemplate(params.template).render(renderInput);
 
   const svg = await satori(element as any, {
     width: params.width,
