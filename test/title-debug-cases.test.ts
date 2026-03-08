@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getTitleDebugProfile } from '../src/debug.js';
+import { loadTitleFixtures } from '../src/fixtures.js';
 import { layoutTitle, tokenizeMixedText } from '../src/templates/text-layout.js';
+import { BUILTIN_TEMPLATES, type BuiltinTemplate } from '../src/types.js';
 
 type DebugCase = {
   name: string;
@@ -63,6 +65,18 @@ describe('title debug cases', () => {
       if (rule.containsWholeWord) {
         expect(result.lines.some((line) => line.includes(rule.containsWholeWord!))).toBe(true);
       }
+    });
+  }
+});
+
+describe('title fixtures semantic coverage', () => {
+  for (const template of BUILTIN_TEMPLATES as BuiltinTemplate[]) {
+    it(`${template} fixtures keep meaningful wording`, async () => {
+      const fixtures = await loadTitleFixtures(template);
+      expect(fixtures.length).toBeGreaterThanOrEqual(10);
+      expect(fixtures.some((item) => /OpenClaw|Claude Code|Tesla|Prompt|Workflow|UI|Debug/i.test(item.title))).toBe(true);
+      expect(fixtures.some((item) => /🦊|🦞/.test(item.title))).toBe(true);
+      expect(fixtures.some((item) => /\n/.test(item.title))).toBe(true);
     });
   }
 });

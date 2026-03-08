@@ -13,6 +13,13 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
     const titleLayout = resolveTemplateTitleLayout('xhs-quote-blue', input);
     const titleLines = titleLayout.lines;
 
+    const lineCount = titleLines.length;
+    const titleBlockHeight = lineCount * titleLayout.fontSize * titleLayout.lineHeight + Math.max(0, lineCount - 1) * 42;
+    const titleTop = Math.max(250, Math.round((1440 - titleBlockHeight) / 2));
+    const quoteTop = Math.max(90, titleTop - 190);
+    const titleGap = lineCount <= 2 ? 60 : lineCount === 3 ? 52 : 44;
+    const highlightWidth = Math.min(Math.max((titleLayout.lineWidths[lineCount - 1] ?? 220) * 0.42, 180), 320);
+
     return (
       <div
         style={{
@@ -28,7 +35,7 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
           style={{
             position: 'absolute' as any,
             left: 110,
-            top: 100,
+            top: quoteTop,
             display: 'flex',
             fontSize: 152,
             lineHeight: 0.9,
@@ -45,11 +52,11 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
           style={{
             position: 'absolute' as any,
             left: 118,
-            top: 408,
+            top: titleTop,
             width: 760,
             display: 'flex',
             flexDirection: 'column',
-            gap: 52,
+            gap: titleGap,
           }}
         >
           {titleLines.map((line, idx) => {
@@ -61,9 +68,9 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
                     style={{
                       position: 'absolute' as any,
                       left: 2,
-                      bottom: 14,
-                      width: 266,
-                      height: 52,
+                      bottom: 10,
+                      width: highlightWidth,
+                      height: 46,
                       background: '#EDB1E5',
                     }}
                   />
@@ -73,7 +80,7 @@ export const xhsQuoteBlueTemplate: TemplateDefinition = {
                     display: 'flex',
                     position: 'relative' as any,
                     fontSize: titleLayout.fontSize,
-                    lineHeight: titleLayout.lineHeight,
+                    lineHeight: titleLayout.lineHeight + (lineCount >= 3 ? 0.04 : 0.02),
                     letterSpacing: -6,
                     fontWeight: 900,
                     color: '#32353B',
