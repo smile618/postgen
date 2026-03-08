@@ -37,6 +37,10 @@
 
 ![xhs-note blue showcase](./website/shots/xhs-note-blue.png)
 
+### apple-notes-handwrite
+
+![apple-notes-handwrite showcase](./website/shots/apple-notes-handwrite.png)
+
 更多用于 README / 展示页的素材与示例数据放在：
 
 - `website/shots/`

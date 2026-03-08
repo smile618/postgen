@@ -68,6 +68,26 @@ export function getTemplateTitleLayoutProfile(template: BuiltinTemplate, _input:
           avoidSingleCharLastLine: true,
         },
       };
+    case 'apple-notes-handwrite':
+      return {
+        template,
+        spec: {
+          box: { width: 860, height: 360 },
+          fontSize: 78,
+          minFontSize: 58,
+          fontSizeStep: 2,
+          lineHeight: 1.04,
+          lineHeightStep: 0.02,
+          letterSpacing: -0.9,
+          maxLines: 3,
+          preferredLines: 2,
+          minLastLineRatio: 0.5,
+          keepWords: true,
+          avoidShortFirstLine: true,
+          minFirstLineRatio: 0.46,
+          avoidSingleCharLastLine: true,
+        },
+      };
   }
 }
 

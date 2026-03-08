@@ -11,7 +11,7 @@ import { inspectTitleLayout, inspectTitleLayoutByTitle, loadTemplateInput } from
 import { buildFixtureInput, loadTitleFixtures } from './fixtures.js';
 import { resolveTemplateTitleLayoutAsync } from './templates/title-layout-service.js';
 
-const DEFAULT_BATCH_TARGETS = ['xhs-note:cream', 'xhs-note:blue', 'xhs-note-green', 'xhs-quote-blue'] as const;
+const DEFAULT_BATCH_TARGETS = ['xhs-note:cream', 'xhs-note:blue', 'xhs-note-green', 'xhs-quote-blue', 'apple-notes-handwrite'] as const;
 
 type RenderTarget = {
   template: BuiltinTemplate;

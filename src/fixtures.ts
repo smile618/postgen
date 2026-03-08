@@ -41,5 +41,11 @@ export function buildFixtureInput(template: BuiltinTemplate, fixture: TitleFixtu
         label: fixture.label ?? '@weixiao',
         theme: fixture.theme,
       };
+    case 'apple-notes-handwrite':
+      return {
+        title: fixture.title,
+        icon: fixture.icon ?? '😯',
+        theme: fixture.theme,
+      };
   }
 }
