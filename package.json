@@ -11,6 +11,7 @@
     "build": "tsc -p tsconfig.json",
     "render:xhs-note": "tsx src/cli.ts render --template xhs-note --data examples/xhs-note.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
     "render:xhs-note-green": "tsx src/cli.ts render --template xhs-note-green --data examples/xhs-note-green.json --stable-name --font fonts/extracted/PingFang-SC-Regular.ttf --fontBold fonts/extracted/PingFang-SC-Semibold.ttf",
+    "showcase:release": "npm run build && node scripts/render-release-showcase.mjs",
     "template:list": "tsx src/cli.ts template --action list",
     "test": "vitest run"
   },

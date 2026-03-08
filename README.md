@@ -19,27 +19,25 @@
 
 ## Showcase
 
-当前模板输出效果示例：
+当前模板输出效果示例（始终指向 latest release 产物）：
 
 ### xhs-note
 
-![xhs-note showcase](./website/shots/xhs-note.png)
+![xhs-note showcase](https://github.com/smile618/postgen/releases/latest/download/xhs-note.png)
 
 ### xhs-note-green
 
-![xhs-note-green showcase](./website/shots/xhs-note-green.png)
+![xhs-note-green showcase](https://github.com/smile618/postgen/releases/latest/download/xhs-note-green.png)
 
 ### xhs-quote-blue
 
-![xhs-quote-blue showcase](./website/shots/xhs-quote-blue.png)
-
-### xhs-note / blue
-
-![xhs-note blue showcase](./website/shots/xhs-note-blue.png)
+![xhs-quote-blue showcase](https://github.com/smile618/postgen/releases/latest/download/xhs-quote-blue.png)
 
 ### apple-notes-handwrite
 
-![apple-notes-handwrite showcase](./website/shots/apple-notes-handwrite.png)
+![apple-notes-handwrite showcase](https://github.com/smile618/postgen/releases/latest/download/apple-notes-handwrite.png)
+
+查看当前版本完整展示：<https://github.com/smile618/postgen/releases/latest>
 
 更多用于 README / 展示页的素材与示例数据放在：
 
