@@ -8,6 +8,8 @@ export interface TemplateDefinition {
   defaultWidth: number;
   defaultHeight: number;
   examplePath: string;
+  preferredFontRegularPath?: string;
+  preferredFontBoldPath?: string;
   schema: z.ZodType<RenderInput>;
   render: (input: RenderInput) => ReactNode;
 }

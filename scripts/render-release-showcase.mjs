@@ -7,8 +7,24 @@ const execFileAsync = promisify(execFile);
 const rootDir = process.cwd();
 const outDir = path.resolve(process.env.RELEASE_SHOWCASE_OUT_DIR || 'release-showcase');
 
-const fontRegular = path.resolve('fonts/extracted/PingFang-SC-Regular.ttf');
-const fontBold = path.resolve('fonts/extracted/PingFang-SC-Semibold.ttf');
+const fontCandidates = [
+  {
+    regular: 'fonts/extracted/PingFang-SC-Regular.ttf',
+    bold: 'fonts/extracted/PingFang-SC-Semibold.ttf',
+  },
+  {
+    regular: 'fonts/PingFang.ttc',
+    bold: 'fonts/PingFang.ttc',
+  },
+  {
+    regular: '/System/Library/Fonts/PingFang.ttc',
+    bold: '/System/Library/Fonts/PingFang.ttc',
+  },
+  {
+    regular: '/System/Library/Fonts/Supplemental/PingFang.ttc',
+    bold: '/System/Library/Fonts/Supplemental/PingFang.ttc',
+  },
+];
 
 const templates = [
   {
@@ -38,14 +54,45 @@ const templates = [
     template: 'apple-notes-handwrite',
     data: 'examples/apple-notes-handwrite.json',
     fileName: 'apple-notes-handwrite.png',
+    fontRegular: 'fonts/custom/PatrickHand-Regular.ttf',
   },
 ];
 
+async function fileExists(targetPath) {
+  try {
+    await fs.access(path.resolve(rootDir, targetPath));
+    return true;
+  } catch {
+    try {
+      await fs.access(targetPath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+async function resolveDefaultFonts() {
+  for (const candidate of fontCandidates) {
+    const regularPath = path.isAbsolute(candidate.regular) ? candidate.regular : path.resolve(rootDir, candidate.regular);
+    const boldPath = path.isAbsolute(candidate.bold) ? candidate.bold : path.resolve(rootDir, candidate.bold);
+
+    if ((await fileExists(regularPath)) && (await fileExists(boldPath))) {
+      return { regular: regularPath, bold: boldPath };
+    }
+  }
+
+  throw new Error('No default font pair found for release showcase rendering.');
+}
+
 async function main() {
   await fs.mkdir(outDir, { recursive: true });
+  const defaultFonts = await resolveDefaultFonts();
 
   for (const item of templates) {
     const outPath = path.join(outDir, item.fileName);
+    const fontRegular = item.fontRegular ? path.resolve(rootDir, item.fontRegular) : defaultFonts.regular;
+    const fontBold = item.fontBold ? path.resolve(rootDir, item.fontBold) : defaultFonts.bold;
     const args = [
       'dist/cli.js',
       'render',
@@ -57,9 +104,11 @@ async function main() {
       outPath,
       '--font',
       fontRegular,
-      '--fontBold',
-      fontBold,
     ];
+
+    if (fontBold) {
+      args.push('--fontBold', fontBold);
+    }
 
     await execFileAsync('node', args, { cwd: rootDir });
   }

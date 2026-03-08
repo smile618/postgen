@@ -3,7 +3,11 @@ dist/
 out/
 release-showcase/
 .venv/
-fonts/
+fonts/*
+!fonts/custom/
+fonts/custom/*
+!fonts/custom/PatrickHand-Regular.ttf
+!fonts/custom/PatrickHand-OFL.txt
 preview.png
 *.log
 .DS_Store

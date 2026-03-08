@@ -41,6 +41,7 @@ export const appleNotesHandwriteTemplate: TemplateDefinition = {
   defaultWidth: 1080,
   defaultHeight: 1440,
   examplePath: 'examples/apple-notes-handwrite.json',
+  preferredFontRegularPath: 'fonts/custom/PatrickHand-Regular.ttf',
   schema: commonSchema,
   render: (input) => {
     const titleLayout = input.__resolvedTitleLayout ?? resolveTemplateTitleLayout('apple-notes-handwrite', input);
