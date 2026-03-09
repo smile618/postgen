@@ -47,5 +47,10 @@ export function buildFixtureInput(template: BuiltinTemplate, fixture: TitleFixtu
         icon: fixture.icon ?? '😯',
         theme: fixture.theme,
       };
+    case 'xhs-date-note':
+      return {
+        title: fixture.title,
+        theme: fixture.theme,
+      };
   }
 }

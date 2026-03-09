@@ -47,6 +47,15 @@ const templates = [
     fontRegular: 'fonts/custom/LXGWMarkerGothic-Regular.ttf',
     preserveTitleBreaks: true,
   },
+  {
+    key: 'xhs-date-note',
+    title: 'xhs-date-note',
+    template: 'xhs-date-note',
+    data: 'examples/xhs-date-note.json',
+    fileName: 'xhs-date-note.png',
+    fontRegular: 'fonts/custom/LXGWMarkerGothic-Regular.ttf',
+    preserveTitleBreaks: true,
+  },
 ];
 
 async function buildReleaseInput(item) {

@@ -1,4 +1,4 @@
-export const BUILTIN_TEMPLATES = ['xhs-note', 'xhs-note-green', 'xhs-quote-blue', 'apple-notes-handwrite'] as const;
+export const BUILTIN_TEMPLATES = ['xhs-note', 'xhs-note-green', 'xhs-quote-blue', 'apple-notes-handwrite', 'xhs-date-note'] as const;
 export type TemplateName = (typeof BUILTIN_TEMPLATES)[number];
 export type BuiltinTemplate = TemplateName;
 

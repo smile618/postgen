@@ -6,6 +6,7 @@
 - `xhs-note-green`：绿色 note 卡片
 - `xhs-quote-blue`：浅蓝极简引用风卡片
 - `apple-notes-handwrite`：Apple Notes 手写便签风格模板
+- `xhs-date-note`：横线纸手写文案卡片，左上角日期自动取当天
 
 ## 参考图新增模板工作流
 
@@ -30,6 +31,7 @@ src/templates/
   xhs-note.tsx
   xhs-note-green.tsx
   xhs-quote-blue.tsx
+  xhs-date-note.tsx
   registry.tsx
   schemas.ts
   shared.tsx

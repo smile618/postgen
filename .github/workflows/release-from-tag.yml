@@ -71,6 +71,9 @@ jobs:
 
           ### apple-notes-handwrite
           <img src="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/apple-notes-handwrite.png" alt="apple-notes-handwrite" width="400" />
+
+          ### xhs-date-note
+          <img src="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/xhs-date-note.png" alt="xhs-date-note" width="400" />
           EOF
 
       - name: Create or update release
@@ -84,6 +87,7 @@ jobs:
             release-showcase/xhs-note-green.png
             release-showcase/xhs-quote-blue.png
             release-showcase/apple-notes-handwrite.png
+            release-showcase/xhs-date-note.png
             release-showcase/manifest.json
           fail_on_unmatched_files: true
           append_body: false

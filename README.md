@@ -37,6 +37,10 @@
 
 ![apple-notes-handwrite showcase](https://github.com/smile618/postgen/releases/latest/download/apple-notes-handwrite.png)
 
+### xhs-date-note
+
+![xhs-date-note showcase](https://github.com/smile618/postgen/releases/latest/download/xhs-date-note.png)
+
 查看当前版本完整展示：<https://github.com/smile618/postgen/releases/latest>
 
 更多用于 README / 展示页的素材与示例数据放在：

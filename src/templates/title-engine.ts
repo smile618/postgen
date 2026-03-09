@@ -12,11 +12,11 @@ export function getTemplateTitleLayoutProfile(template: BuiltinTemplate, _input:
       return {
         template,
         spec: {
-          box: { width: 760, height: 540 },
-          fontSize: 84,
-          minFontSize: 52,
+          box: { width: 760, height: 760 },
+          fontSize: 96,
+          minFontSize: 58,
           fontSizeStep: 2,
-          lineHeight: 1.08,
+          lineHeight: 1.06,
           lineHeightStep: 0.02,
           letterSpacing: -3.5,
           maxLines: 5,
@@ -85,6 +85,26 @@ export function getTemplateTitleLayoutProfile(template: BuiltinTemplate, _input:
           keepWords: true,
           avoidShortFirstLine: true,
           minFirstLineRatio: 0.46,
+          avoidSingleCharLastLine: true,
+        },
+      };
+    case 'xhs-date-note':
+      return {
+        template,
+        spec: {
+          box: { width: 910, height: 480 },
+          fontSize: 98,
+          minFontSize: 68,
+          fontSizeStep: 2,
+          lineHeight: 1.1,
+          lineHeightStep: 0.02,
+          letterSpacing: -1,
+          maxLines: 4,
+          preferredLines: 3,
+          minLastLineRatio: 0.56,
+          keepWords: true,
+          avoidShortFirstLine: true,
+          minFirstLineRatio: 0.44,
           avoidSingleCharLastLine: true,
         },
       };
