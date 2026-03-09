@@ -75,11 +75,18 @@ async function resolveFontRegularPath(args: any) {
   return fontRegularPath;
 }
 
+const TITLE_MANUAL_BREAK_HELP = [
+  '手动换行：在 JSON 的 title 里直接写换行符（推荐），CLI 会按你给的行来渲染。',
+  '例："title": "第一行\\n第二行\\n第三行"',
+  '如果 title 里没有换行，则自动排版。',
+].join(' ');
+
 await yargs(hideBin(process.argv))
   .scriptName('postgen')
+  .epilogue(TITLE_MANUAL_BREAK_HELP)
   .command(
     'render',
-    '根据 JSON 数据渲染 PNG',
+    '根据 JSON 数据渲染 PNG（title 支持手动换行）',
     (cmd: any) =>
       cmd
         .option('template', {
@@ -91,7 +98,7 @@ await yargs(hideBin(process.argv))
         .option('data', {
           type: 'string',
           demandOption: true,
-          describe: '输入 JSON 路径',
+          describe: '输入 JSON 路径。title 支持手动换行；在 JSON 中直接写 "第一行\\n第二行" 即可',
         })
         .option('out', {
           type: 'string',
@@ -122,7 +129,7 @@ await yargs(hideBin(process.argv))
           type: 'string',
           choices: ['rule', 'llm'],
           default: 'rule',
-          describe: '标题拆分模式：rule=规则排版，llm=先用大模型建议断行再渲染',
+          describe: '标题排版模式。若 title 已手动写了换行，优先按手动换行渲染；否则再按所选模式自动拆分',
         }),
     async (args: any) => {
       const template = args.template as BuiltinTemplate;
@@ -150,13 +157,13 @@ await yargs(hideBin(process.argv))
   )
   .command(
     'render-many',
-    '用同一份数据批量渲染多张 PNG',
+    '用同一份数据批量渲染多张 PNG（title 支持手动换行）',
     (cmd: any) =>
       cmd
         .option('data', {
           type: 'string',
           demandOption: true,
-          describe: '输入 JSON 路径',
+          describe: '输入 JSON 路径。title 支持手动换行；同一份数据会被所有目标模板复用',
         })
         .option('targets', {
           type: 'string',
@@ -183,7 +190,7 @@ await yargs(hideBin(process.argv))
           type: 'string',
           choices: ['rule', 'llm'],
           default: 'rule',
-          describe: '标题拆分模式：rule=规则排版，llm=先用大模型建议断行再渲染',
+          describe: '标题排版模式。若 title 已手动写了换行，优先按手动换行渲染；否则再按所选模式自动拆分',
         }),
     async (args: any) => {
       const dataPath = path.resolve(String(args.data));
@@ -238,7 +245,7 @@ await yargs(hideBin(process.argv))
   )
   .command(
     'debug-title',
-    '查看标题排版 solver 的候选结果与最终解',
+    '查看标题排版结果；可直接验证手动换行是否按预期生效',
     (cmd: any) =>
       cmd
         .option('template', {
@@ -253,7 +260,7 @@ await yargs(hideBin(process.argv))
         })
         .option('title', {
           type: 'string',
-          describe: '直接传标题文本；支持用 \\n 表示换行',
+          describe: '直接传标题文本；支持用 \\n 表示换行，可用来快速确认最终分行',
         })
         .option('limit', {
           type: 'number',
@@ -278,7 +285,7 @@ await yargs(hideBin(process.argv))
   )
   .command(
     'render-fixtures',
-    '按模板批量渲染标题测试样本，输出到以模板名分组的目录',
+    '按模板批量渲染标题测试样本，包含手动换行 case，输出到以模板名分组的目录',
     (cmd: any) =>
       cmd
         .option('templates', {
@@ -306,7 +313,7 @@ await yargs(hideBin(process.argv))
           type: 'string',
           choices: ['rule', 'llm'],
           default: 'rule',
-          describe: '标题拆分模式：rule=规则排版，llm=先用大模型建议断行再渲染',
+          describe: '标题排版模式。若 fixture title 已手动写了换行，优先按手动换行渲染；否则再按所选模式自动拆分',
         }),
     async (args: any) => {
       const fontRegularPath = await resolveFontRegularPath(args);

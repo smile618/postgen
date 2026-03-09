@@ -102,6 +102,44 @@ postgen render --template xhs-quote-blue --data ./quote.json
 postgen render --template xhs-note --data ./note.json --out ./result.png
 ```
 
+## Title Manual Breaks
+
+这是 CLI 对外最重要的标题能力之一：**你可以直接在 JSON 的 `title` 里手动写换行，最终出图会尊重这个分行。**
+
+适合：
+
+- 你已经想好了展示节奏
+- 某个标题是核心 showcase case
+- 你不想让自动排版再改动你的分行
+
+写法很简单：
+
+```json
+{
+  "title": "停止追求\n信息密度\n开始追求\n记忆点",
+  "subtitle": "让标题先有记忆点，再谈信息量",
+  "theme": "cream"
+}
+```
+
+然后直接渲染：
+
+```bash
+postgen render --template xhs-note --data ./note.json
+```
+
+规则很清晰：
+
+- `title` **有换行** → 按你写的行来渲染
+- `title` **没换行** → 走自动排版
+- 所以如果你要稳定复现某个展示 case，最直接的方法就是在 JSON 里手动分行
+
+想先检查最终分行是否符合预期，可以直接用：
+
+```bash
+postgen debug-title --template xhs-note --title "第一行\n第二行\n第三行"
+```
+
 ## Fonts
 
 如果不传字体，`postgen` 会优先尝试这些系统字体：
@@ -150,47 +188,41 @@ postgen config list
 
 ## Title Layout Modes
 
-当前标题排版支持两种模式：
+对外理解可以很简单：
+
+- **优先规则 1：** 如果 `title` 里已经手动写了换行，CLI 会优先按这个分行渲染
+- **优先规则 2：** 只有当 `title` 没有换行时，才会进入自动排版
+
+也就是说，`--title-layout-mode` 主要影响的是**没有手动换行的标题**。
 
 ### 1) `rule`（默认）
 
-完全使用本地规则引擎做标题拆分与字号选择。
-
-特点：
-
-- 稳定
-- 可预测
-- 不依赖外部 LLM
-- 适合批量生成与回归测试
+- 没有手动换行时，使用内置自动排版
+- 适合大多数默认场景
+- 稳定、可预测
 
 ### 2) `llm`
 
-先调用 LLM 给出多个语义断行候选，再由本地做渲染约束筛选。
+- 没有手动换行时，允许用更智能的方式辅助断行
+- 适合更长、语义边界更复杂的标题
 
-特点：
+最重要的使用建议：
 
-- 对长标题、语义边界复杂标题更灵活
-- 不直接信模型，而是本地二次评分
-- 不合格候选会自动回退到 `rule`
-
-当前 `llm` 模式会关注：
-
-- 行数是否过少
-- 行宽是否过满
-- 标题区域高度是否被浪费
-- 模板特定偏好（例如 `xhs-note-green` 长标题更偏 3-4 行）
+- **核心展示 case / 你想锁死的效果** → 直接在 JSON 里手动换行
+- **普通长标题** → 不写换行，让 CLI 自动排版
 
 使用方式：
 
 ```bash
+postgen render --template xhs-note --data ./note.json --title-layout-mode rule
 postgen render --template xhs-note --data ./note.json --title-layout-mode llm
 ```
 
 批量：
 
 ```bash
-postgen render-many --data ./note.json --title-layout-mode llm
-postgen render-fixtures --title-layout-mode llm
+postgen render-many --data ./note.json --title-layout-mode rule
+postgen render-fixtures --title-layout-mode rule
 ```
 
 ## LLM Configuration
@@ -326,7 +358,13 @@ fixture-output/
 
 ### 调试标题布局
 
-查看当前 rule solver 的候选结果：
+先看手动换行会不会被正确尊重：
+
+```bash
+postgen debug-title --template xhs-note --title "第一行\n第二行\n第三行"
+```
+
+再看普通长标题的自动分行：
 
 ```bash
 postgen debug-title --template xhs-note --title "好的标题排版不是让每一行都一样长而是形成自然节奏"
