@@ -61,16 +61,16 @@ jobs:
           ## Showcase
 
           ### xhs-note
-          ![xhs-note](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/xhs-note.png)
+          <img src="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/xhs-note.png" alt="xhs-note" width="400" />
 
           ### xhs-note-green
-          ![xhs-note-green](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/xhs-note-green.png)
+          <img src="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/xhs-note-green.png" alt="xhs-note-green" width="400" />
 
           ### xhs-quote-blue
-          ![xhs-quote-blue](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/xhs-quote-blue.png)
+          <img src="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/xhs-quote-blue.png" alt="xhs-quote-blue" width="400" />
 
           ### apple-notes-handwrite
-          ![apple-notes-handwrite](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/apple-notes-handwrite.png)
+          <img src="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG_NAME}/apple-notes-handwrite.png" alt="apple-notes-handwrite" width="400" />
           EOF
 
       - name: Create or update release

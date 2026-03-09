@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -19,6 +20,7 @@ const templates = [
     template: 'xhs-note',
     data: 'website/data/xhs-note.json',
     fileName: 'xhs-note.png',
+    preserveTitleBreaks: true,
   },
   {
     key: 'xhs-note-green',
@@ -26,6 +28,7 @@ const templates = [
     template: 'xhs-note-green',
     data: 'website/data/xhs-note-green.json',
     fileName: 'xhs-note-green.png',
+    preserveTitleBreaks: true,
   },
   {
     key: 'xhs-quote-blue',
@@ -33,6 +36,7 @@ const templates = [
     template: 'xhs-quote-blue',
     data: 'website/data/xhs-quote-blue.json',
     fileName: 'xhs-quote-blue.png',
+    preserveTitleBreaks: true,
   },
   {
     key: 'apple-notes-handwrite',
@@ -40,9 +44,32 @@ const templates = [
     template: 'apple-notes-handwrite',
     data: 'examples/apple-notes-handwrite.json',
     fileName: 'apple-notes-handwrite.png',
-    fontRegular: 'fonts/custom/PatrickHand-Regular.ttf',
+    fontRegular: 'fonts/custom/LXGWMarkerGothic-Regular.ttf',
+    preserveTitleBreaks: true,
   },
 ];
+
+async function buildReleaseInput(item) {
+  const sourcePath = path.resolve(rootDir, item.data);
+  const raw = await fs.readFile(sourcePath, 'utf8');
+  const parsed = JSON.parse(raw);
+
+  if (item.preserveTitleBreaks && typeof parsed.title === 'string') {
+    parsed.titleLayoutMode = 'rule';
+    parsed.__resolvedTitleLayout = {
+      lines: parsed.title.split(/\r?\n/).map((line) => String(line ?? '').trim()).filter(Boolean),
+      fontSize: null,
+      lineHeight: null,
+      lineWidths: [],
+      truncated: false,
+    };
+  }
+
+  const hash = crypto.createHash('sha1').update(item.key).digest('hex').slice(0, 8);
+  const tempPath = path.join(outDir, `${item.key}.${hash}.render-input.json`);
+  await fs.writeFile(tempPath, JSON.stringify(parsed, null, 2) + '\n', 'utf8');
+  return tempPath;
+}
 
 async function main() {
   await fs.mkdir(outDir, { recursive: true });
@@ -53,6 +80,7 @@ async function main() {
 
   for (const item of templates) {
     const outPath = path.join(outDir, item.fileName);
+    const renderDataPath = await buildReleaseInput(item);
     const fontRegular = item.fontRegular ? path.resolve(rootDir, item.fontRegular) : defaultFonts.regular;
     const fontBold = item.fontBold ? path.resolve(rootDir, item.fontBold) : defaultFonts.bold;
     const args = [
@@ -61,7 +89,7 @@ async function main() {
       '--template',
       item.template,
       '--data',
-      item.data,
+      renderDataPath,
       '--out',
       outPath,
       '--font',
