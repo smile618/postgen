@@ -44,8 +44,6 @@ export const xhsNoteTemplate: TemplateDefinition = {
 
     const noteLabel = input.label ?? 'Text Note';
     const icon = input.icon ?? '💻';
-    const subtitle = input.subtitle?.trim();
-    const bullets = (input.bullets ?? []).slice(0, 2);
     const variant = input.theme === 'blue' ? 'blue' : 'cream';
     const theme = xhsNoteThemes[variant];
     const hasWrappedTitle = titleLines.length > 1;
@@ -112,8 +110,8 @@ export const xhsNoteTemplate: TemplateDefinition = {
             <div style={{ fontSize: 24, fontWeight: 800, color: theme.accent, letterSpacing: -0.5, marginRight: 20 }}>{noteLabel}</div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', marginTop: 118 }}>
-            <div style={{ fontSize: 92, lineHeight: 1, marginLeft: theme.iconMarginLeft, marginBottom: 34 }}>{icon}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', marginTop: 104 }}>
+            <div style={{ fontSize: 96, lineHeight: 1, marginLeft: theme.iconMarginLeft, marginBottom: 42 }}>{icon}</div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: titleGap, marginLeft: theme.titleMarginLeft, maxWidth: 760 }}>
               {titleLines.map((line, idx) => {
@@ -160,53 +158,6 @@ export const xhsNoteTemplate: TemplateDefinition = {
               })}
             </div>
 
-            {subtitle ? (
-              <div
-                style={{
-                  display: 'flex',
-                  marginTop: 28,
-                  marginLeft: theme.titleMarginLeft,
-                  maxWidth: 760,
-                  fontSize: 24,
-                  lineHeight: 1.48,
-                  color: theme.subtitleColor,
-                  fontWeight: 500,
-                }}
-              >
-                {subtitle}
-              </div>
-            ) : null}
-
-            {bullets.length ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 28, marginLeft: theme.titleMarginLeft, maxWidth: 760 }}>
-                {bullets.map((bullet, idx) => (
-                  <div key={idx} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        width: 9,
-                        height: 9,
-                        borderRadius: 99,
-                        background: theme.bulletColor,
-                        marginTop: 11,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <div
-                      style={{
-                        display: 'flex',
-                        fontSize: 22,
-                        lineHeight: 1.45,
-                        color: theme.subtitleColor,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {bullet}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
           </div>
 
           <div style={{ flex: 1, display: 'flex' }} />
