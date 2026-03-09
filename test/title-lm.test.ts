@@ -63,4 +63,36 @@ describe('title layout service', () => {
       process.env.LLM_MODEL = prevModel;
     }
   });
+
+  it('preserves manual line breaks in rule mode', async () => {
+    const result = await resolveTemplateTitleLayoutAsync('xhs-note', {
+      title: '第一行\n第二行\n第三行',
+      titleLayoutMode: 'rule',
+    });
+
+    expect(result.lines).toEqual(['第一行', '第二行', '第三行']);
+  });
+
+  it('falls back to manual breaks when llm config is unavailable even if title already contains breaks', async () => {
+    const prevKey = process.env.OPENAI_API_KEY;
+    const prevBase = process.env.OPENAI_API_BASE;
+    const prevModel = process.env.LLM_MODEL;
+
+    delete process.env.OPENAI_API_KEY;
+    delete process.env.OPENAI_API_BASE;
+    delete process.env.LLM_MODEL;
+
+    try {
+      const result = await resolveTemplateTitleLayoutAsync('xhs-note', {
+        title: '第一行\n第二行\n第三行',
+        titleLayoutMode: 'llm',
+      });
+
+      expect(result.lines).toEqual(['第一行', '第二行', '第三行']);
+    } finally {
+      process.env.OPENAI_API_KEY = prevKey;
+      process.env.OPENAI_API_BASE = prevBase;
+      process.env.LLM_MODEL = prevModel;
+    }
+  });
 });

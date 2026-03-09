@@ -14,13 +14,19 @@ interface LlmTitleBreakResponse {
 }
 
 function normalizeTitle(text: string) {
-  return String(text ?? '').replace(/\s+/g, ' ').trim();
+  return String(text ?? '')
+    .split(/\r?\n/)
+    .map((line) => line.replace(/[\t ]+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n')
+    .trim();
 }
 
 function sanitizeCandidateLines(lines: unknown[] | undefined, clean: string, spec: TitleLayoutSpec): string[] | null {
   const normalized = Array.isArray(lines) ? lines.map((item) => String(item ?? '').trim()).filter(Boolean) : [];
   if (normalized.length < 2 || normalized.length > spec.maxLines) return null;
-  if (normalized.join('') !== clean) return null;
+  const flattened = clean.replace(/\s+/g, ' ').replace(/\r?\n/g, '').trim();
+  if (normalized.join('') !== flattened) return null;
   return normalized;
 }
 
@@ -34,7 +40,7 @@ export async function suggestTitleBreakCandidatesWithLlm(
   if (!config) return [];
 
   const clean = normalizeTitle(title);
-  if (!clean || /\r?\n/.test(clean)) return [];
+  if (!clean) return [];
 
   const timeoutMs = options.timeoutMs ?? config.timeoutMs;
 

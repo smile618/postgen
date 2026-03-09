@@ -130,15 +130,30 @@ function shouldRejectCandidate(evaluated: LlmEvaluatedCandidate) {
   return evaluated.reasons.includes('too-wide') || evaluated.reasons.includes('green-template-needs-more-lines');
 }
 
+function normalizeTitlePreservingManualBreaks(text: string) {
+  return String(text ?? '')
+    .split(/\r?\n/)
+    .map((line) => line.replace(/[\t ]+/g, ' ').trim())
+    .filter((line, index, arr) => line.length > 0 || (arr.length === 1 && index === 0))
+    .join('\n')
+    .trim();
+}
+
+function flattenTitleLines(text: string) {
+  return String(text ?? '').replace(/\s+/g, ' ').trim();
+}
+
 export async function resolveTemplateTitleLayoutAsync(template: BuiltinTemplate, input: RenderInput): Promise<TitleLayoutResult> {
-  const title = String(input.title ?? '').replace(/\s+/g, ' ').trim();
+  const title = normalizeTitlePreservingManualBreaks(input.title ?? '');
+  const flattenedTitle = flattenTitleLines(title);
   const profile = getTemplateTitleLayoutProfile(template, input);
   const mode = input.titleLayoutMode ?? 'rule';
+  const hasManualBreaks = /\r?\n/.test(title);
 
   if (mode === 'llm') {
     const candidates = await suggestTitleBreakCandidatesWithLlm(template, title, profile.spec);
     const evaluated = candidates
-      .map((lines) => evaluateLlmCandidate(template, title, profile.spec, lines))
+      .map((lines) => evaluateLlmCandidate(template, flattenedTitle, profile.spec, lines))
       .filter((item): item is LlmEvaluatedCandidate => Boolean(item))
       .sort((a, b) => a.score - b.score);
 
@@ -172,5 +187,9 @@ export async function resolveTemplateTitleLayoutAsync(template: BuiltinTemplate,
     }
   }
 
-  return layoutTitle(title, profile.spec);
+  if (hasManualBreaks) {
+    return layoutTitle(title, profile.spec);
+  }
+
+  return layoutTitle(flattenedTitle, profile.spec);
 }
