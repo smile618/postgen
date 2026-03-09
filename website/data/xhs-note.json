@@ -1,9 +1,9 @@
 {
-  "title": "Your project\ncan look like\na real product",
-  "subtitle": "Turn structured text into shareable Xiaohongshu-style cards with stable visual templates.",
+  "title": "把普通项目\n包装成一眼就想点开的\n作品感页面",
+  "subtitle": "不是随便出张图就完事，而是让标题、留白和信息层次一起把质感撑起来。",
   "bullets": [
-    "Large title, strong whitespace, reusable composition",
-    "Better for content screenshots than generic dashboards"
+    "先抓第一眼，再解释细节",
+    "比起功能截图，更像一张会传播的内容卡"
   ],
   "icon": "💻",
   "label": "Text Note",
