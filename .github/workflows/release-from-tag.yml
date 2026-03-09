@@ -17,12 +17,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate tag format
+      - name: Validate tag format and normalize version
+        id: version
+        shell: bash
         run: |
           if ! [[ "${GITHUB_REF_NAME}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Skipping non-semver tag: ${GITHUB_REF_NAME}"
             exit 1
           fi
+
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "normalized version: ${VERSION}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -45,9 +51,12 @@ jobs:
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
           TAG_NAME: ${{ github.ref_name }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           cat <<EOF > release-body.md
-          Automated release for \\`${TAG_NAME}\\`.
+          Automated release for \\`${VERSION}\\`.
+
+          Source tag: \\`${TAG_NAME}\\`.
 
           ## Showcase
 
@@ -68,7 +77,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
+          name: ${{ steps.version.outputs.version }}
           body_path: release-body.md
           files: |
             release-showcase/xhs-note.png
