@@ -1,5 +1,7 @@
 # postgen
 
+> npm package name: `postgen2`
+
 `postgen` 是一个模板驱动的 **JSON -> PNG** CLI，目标不是做通用设计工具，而是稳定产出适合小红书风格的文字图片。
 
 它把流程收敛成一个简单契约：
@@ -65,18 +67,24 @@
 ## Install
 
 ```bash
-pnpm install
-pnpm build
+npm install
+npm run build
 npm link
+```
+
+全局安装（发布后）：
+
+```bash
+npm install -g postgen2
 ```
 
 开发态也可以直接跑：
 
 ```bash
-pnpm tsx src/cli.ts template --action list
+npx tsx src/cli.ts template --action list
 ```
 
-如果你只想本地测试，不需要 `npm link`，直接用 `pnpm tsx src/cli.ts ...` 或 `node dist/cli.js ...` 即可。
+如果你只想本地测试，不需要 `npm link`，直接用 `npx tsx src/cli.ts ...` 或 `node dist/cli.js ...` 即可。
 
 ## Quick Start
 
