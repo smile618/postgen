@@ -2,11 +2,11 @@
 
 > npm package name: `postgen2`
 
-`postgen` 是一个模板驱动的 **JSON -> PNG** CLI，目标不是做通用设计工具，而是稳定产出适合小红书风格的文字图片。
+`postgen` 是一个模板驱动的 **title / JSON -> PNG** CLI，目标不是做通用设计工具，而是稳定产出适合小红书风格的文字图片。
 
 它把流程收敛成一个简单契约：
 
-- 输入：一个 JSON 文件
+- 输入：一个标题，或一个 JSON 文件
 - 选择：一个模板
 - 输出：一张 PNG 图片
 
@@ -53,7 +53,7 @@
 
 ## Features
 
-- 模板驱动渲染：同一份 JSON 可以稳定生成同风格 PNG
+- 模板驱动渲染：同一个标题或同一份 JSON 都可以稳定生成同风格 PNG
 - 内置标题排版引擎：自动控制字号、行数、行宽与节奏
 - 支持多模板批量渲染
 - 支持 fixture 批量渲染，方便做视觉回归测试
@@ -104,6 +104,27 @@ postgen template --action init --name xhs-quote-blue --out ./quote.json
 渲染图片：
 
 ```bash
+postgen render --template xhs-note --title "把普通项目\n包装成作品感页面"
+postgen render --template xhs-quote-blue "别再迷信\n信息密度了"
+```
+
+如果你想继续直接走命令行，也可以把常用字段一起内联传进去：
+
+```bash
+postgen render \
+  --template xhs-note \
+  --title "把普通项目\n包装成作品感页面" \
+  --subtitle "不是随便出张图就完事，而是把质感撑起来" \
+  --bullet "先抓第一眼，再解释细节" \
+  --bullet "比起功能截图，更像一张会传播的内容卡" \
+  --theme cream \
+  --icon "💻" \
+  --label "Text Note"
+```
+
+如果你更习惯维护一份完整数据，也可以继续传 JSON：
+
+```bash
 postgen render --template xhs-note --data ./note.json
 postgen render --template xhs-quote-blue --data ./quote.json
 ```
@@ -111,12 +132,12 @@ postgen render --template xhs-quote-blue --data ./quote.json
 指定输出路径：
 
 ```bash
-postgen render --template xhs-note --data ./note.json --out ./result.png
+postgen render --template xhs-note --title "把普通项目\n包装成作品感页面" --out ./result.png
 ```
 
 ## Title Manual Breaks
 
-这是 CLI 对外最重要的标题能力之一：**你可以直接在 JSON 的 `title` 里手动写换行，最终出图会尊重这个分行。**
+这是 CLI 对外最重要的标题能力之一：**你可以直接传 `--title`，也可以在 JSON 的 `title` 里手动写换行，最终出图都会尊重这个分行。**
 
 适合：
 
@@ -124,7 +145,13 @@ postgen render --template xhs-note --data ./note.json --out ./result.png
 - 某个标题是核心 showcase case
 - 你不想让自动排版再改动你的分行
 
-写法很简单：
+最轻量的写法：
+
+```bash
+postgen render --template xhs-note --title "停止追求\n信息密度\n开始追求\n记忆点"
+```
+
+如果你还要带 `theme` / `icon` / `label` / `subtitle` / `bullets` 等字段，可以直接继续加命令行参数，也可以继续用 JSON：
 
 ```json
 {
@@ -134,7 +161,7 @@ postgen render --template xhs-note --data ./note.json --out ./result.png
 }
 ```
 
-然后直接渲染：
+例如继续用 JSON 时，直接渲染：
 
 ```bash
 postgen render --template xhs-note --data ./note.json
@@ -144,7 +171,7 @@ postgen render --template xhs-note --data ./note.json
 
 - `title` **有换行** → 按你写的行来渲染
 - `title` **没换行** → 走自动排版
-- 所以如果你要稳定复现某个展示 case，最直接的方法就是在 JSON 里手动分行
+- 所以如果你要稳定复现某个展示 case，最直接的方法就是在 `--title` 或 JSON 里手动分行
 
 想先检查最终分行是否符合预期，可以直接用：
 
@@ -165,7 +192,7 @@ postgen debug-title --template xhs-note --title "第一行\n第二行\n第三行
 ```bash
 postgen render \
   --template xhs-note \
-  --data ./note.json \
+  --title "把普通项目\n包装成作品感页面" \
   --font ./fonts/PingFang-SC-Regular.ttf \
   --fontBold ./fonts/PingFang-SC-Semibold.ttf
 ```
@@ -226,14 +253,14 @@ postgen config list
 使用方式：
 
 ```bash
-postgen render --template xhs-note --data ./note.json --title-layout-mode rule
-postgen render --template xhs-note --data ./note.json --title-layout-mode llm
+postgen render --template xhs-note --title "好的标题排版不是让每一行都一样长而是形成自然节奏" --title-layout-mode rule
+postgen render --template xhs-note --title "好的标题排版不是让每一行都一样长而是形成自然节奏" --title-layout-mode llm
 ```
 
 批量：
 
 ```bash
-postgen render-many --data ./note.json --title-layout-mode rule
+postgen render-many --title "把普通项目\n包装成作品感页面" --title-layout-mode rule
 postgen render-fixtures --title-layout-mode rule
 ```
 
@@ -305,7 +332,7 @@ postgen template --action init --name xhs-note --out ./note.json
 ```bash
 postgen render \
   --template xhs-note \
-  --data ./note.json \
+  --title "把普通项目\n包装成作品感页面" \
   --font ./fonts/PingFang-SC-Regular.ttf \
   --fontBold ./fonts/PingFang-SC-Semibold.ttf
 ```
@@ -313,6 +340,7 @@ postgen render \
 常用参数：
 
 - `--template`
+- `--title`
 - `--data`
 - `--out`
 - `--stable-name`
@@ -324,16 +352,17 @@ postgen render \
 
 ### 批量渲染多模板
 
-使用同一份 JSON，一次产出多张图：
+使用同一个标题，一次产出多张图：
 
 ```bash
 postgen render-many \
-  --data ./note.json \
+  --title "把普通项目\n包装成作品感页面" \
   --targets xhs-note:cream,xhs-note:blue,xhs-note-green,xhs-quote-blue
 ```
 
 常用参数：
 
+- `--title`
 - `--data`
 - `--targets`
 - `--dir`

@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -20,7 +19,6 @@ const templates = [
     template: 'xhs-note',
     data: 'website/data/xhs-note.json',
     fileName: 'xhs-note.png',
-    preserveTitleBreaks: true,
   },
   {
     key: 'xhs-note-green',
@@ -28,7 +26,6 @@ const templates = [
     template: 'xhs-note-green',
     data: 'website/data/xhs-note-green.json',
     fileName: 'xhs-note-green.png',
-    preserveTitleBreaks: true,
   },
   {
     key: 'xhs-quote-blue',
@@ -36,7 +33,6 @@ const templates = [
     template: 'xhs-quote-blue',
     data: 'website/data/xhs-quote-blue.json',
     fileName: 'xhs-quote-blue.png',
-    preserveTitleBreaks: true,
   },
   {
     key: 'apple-notes-handwrite',
@@ -45,7 +41,6 @@ const templates = [
     data: 'examples/apple-notes-handwrite.json',
     fileName: 'apple-notes-handwrite.png',
     fontRegular: 'fonts/custom/LXGWMarkerGothic-Regular.ttf',
-    preserveTitleBreaks: true,
   },
   {
     key: 'xhs-date-note',
@@ -54,30 +49,57 @@ const templates = [
     data: 'examples/xhs-date-note.json',
     fileName: 'xhs-date-note.png',
     fontRegular: 'fonts/custom/LXGWMarkerGothic-Regular.ttf',
-    preserveTitleBreaks: true,
   },
 ];
 
-async function buildReleaseInput(item) {
+async function loadReleaseInput(item) {
   const sourcePath = path.resolve(rootDir, item.data);
   const raw = await fs.readFile(sourcePath, 'utf8');
-  const parsed = JSON.parse(raw);
+  return JSON.parse(raw);
+}
 
-  if (item.preserveTitleBreaks && typeof parsed.title === 'string') {
-    parsed.titleLayoutMode = 'rule';
-    parsed.__resolvedTitleLayout = {
-      lines: parsed.title.split(/\r?\n/).map((line) => String(line ?? '').trim()).filter(Boolean),
-      fontSize: null,
-      lineHeight: null,
-      lineWidths: [],
-      truncated: false,
-    };
+function pushInlineInputArgs(args, input) {
+  if (typeof input.title !== 'string' || input.title.trim().length === 0) {
+    throw new Error('Release showcase input requires a non-empty title');
   }
 
-  const hash = crypto.createHash('sha1').update(item.key).digest('hex').slice(0, 8);
-  const tempPath = path.join(outDir, `${item.key}.${hash}.render-input.json`);
-  await fs.writeFile(tempPath, JSON.stringify(parsed, null, 2) + '\n', 'utf8');
-  return tempPath;
+  args.push('--title', input.title);
+
+  if (typeof input.subtitle === 'string' && input.subtitle.trim()) {
+    args.push('--subtitle', input.subtitle);
+  }
+
+  if (Array.isArray(input.bullets)) {
+    for (const bullet of input.bullets) {
+      if (typeof bullet === 'string' && bullet.trim()) {
+        args.push('--bullet', bullet);
+      }
+    }
+  }
+
+  if (typeof input.footer === 'string' && input.footer.trim()) {
+    args.push('--footer', input.footer);
+  }
+
+  if (typeof input.theme === 'string' && input.theme.trim()) {
+    args.push('--theme', input.theme);
+  }
+
+  if (typeof input.icon === 'string' && input.icon.trim()) {
+    args.push('--icon', input.icon);
+  }
+
+  if (typeof input.label === 'string' && input.label.trim()) {
+    args.push('--label', input.label);
+  }
+
+  if (typeof input.day === 'string' && input.day.trim()) {
+    args.push('--day', input.day);
+  }
+
+  if (typeof input.serial === 'string' && input.serial.trim()) {
+    args.push('--serial', input.serial);
+  }
 }
 
 async function main() {
@@ -89,7 +111,7 @@ async function main() {
 
   for (const item of templates) {
     const outPath = path.join(outDir, item.fileName);
-    const renderDataPath = await buildReleaseInput(item);
+    const releaseInput = await loadReleaseInput(item);
     const fontRegular = item.fontRegular ? path.resolve(rootDir, item.fontRegular) : defaultFonts.regular;
     const fontBold = item.fontBold ? path.resolve(rootDir, item.fontBold) : defaultFonts.bold;
     const args = [
@@ -97,13 +119,15 @@ async function main() {
       'render',
       '--template',
       item.template,
-      '--data',
-      renderDataPath,
+      '--title-layout-mode',
+      'rule',
       '--out',
       outPath,
       '--font',
       fontRegular,
     ];
+
+    pushInlineInputArgs(args, releaseInput);
 
     if (fontBold) {
       args.push('--fontBold', fontBold);

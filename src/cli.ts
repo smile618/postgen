@@ -3,19 +3,20 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { BUILTIN_TEMPLATES, type BuiltinTemplate } from './types.js';
-import { loadInput, renderToPng } from './render.js';
+import { BUILTIN_TEMPLATES, type BuiltinTemplate, type RenderInput, type ThemeName } from './types.js';
+import { renderToPng } from './render.js';
 import { getTemplate, templateList } from './templates/registry.js';
 import { config, getLlmConfig, getOutputImageDir, makeBatchOutputDir, resetConfigItem, setLlmConfigItem, setOutputImageDir } from './config.js';
 import { inspectTitleLayout, inspectTitleLayoutByTitle, loadTemplateInput } from './debug.js';
 import { buildFixtureInput, loadTitleFixtures } from './fixtures.js';
-import { resolveTemplateTitleLayoutAsync } from './templates/title-layout-service.js';
+import { buildInlineInput, loadInput } from './input.js';
 
 const DEFAULT_BATCH_TARGETS = ['xhs-note:cream', 'xhs-note:blue', 'xhs-note-green', 'xhs-quote-blue', 'apple-notes-handwrite', 'xhs-date-note'] as const;
+const INLINE_THEME_CHOICES = ['black', 'white', 'yellow', 'mint', 'cream', 'blue'] as const;
 
 type RenderTarget = {
   template: BuiltinTemplate;
-  theme?: string;
+  theme?: ThemeName;
   suffix: string;
 };
 
@@ -49,6 +50,69 @@ function resolveOutPath(template: BuiltinTemplate, out?: string, stableName?: bo
   return path.join(getOutputImageDir(), filename);
 }
 
+function hasCliTextInput(value: unknown) {
+  return typeof value === 'string' && value.length > 0;
+}
+
+function pickInlineTitle(args: any, positionalKey = 'inputTitle') {
+  if (hasCliTextInput(args.title)) return String(args.title);
+  if (hasCliTextInput(args[positionalKey])) return String(args[positionalKey]);
+  return undefined;
+}
+
+function withInlineInputOptions(cmd: any) {
+  return cmd
+    .option('subtitle', {
+      type: 'string',
+      describe: '直接传副标题文本；支持用 \\n 表示换行',
+    })
+    .option('bullet', {
+      type: 'string',
+      array: true,
+      describe: '可重复传入，组成 bullets 数组',
+    })
+    .option('footer', {
+      type: 'string',
+      describe: '直接传页脚文本；支持用 \\n 表示换行',
+    })
+    .option('theme', {
+      type: 'string',
+      choices: [...INLINE_THEME_CHOICES],
+      describe: '主题名称',
+    })
+    .option('icon', {
+      type: 'string',
+      describe: '图标字符',
+    })
+    .option('label', {
+      type: 'string',
+      describe: '标签文本',
+    })
+    .option('day', {
+      type: 'string',
+      describe: '日期/星期文本',
+    })
+    .option('serial', {
+      type: 'string',
+      describe: '序号文本',
+    });
+}
+
+function collectInlineInputOverrides(args: any): Partial<RenderInput> {
+  const overrides: Partial<RenderInput> = {};
+
+  if (hasCliTextInput(args.subtitle)) overrides.subtitle = String(args.subtitle);
+  if (Array.isArray(args.bullet) && args.bullet.length > 0) overrides.bullets = args.bullet.map((item: unknown) => String(item));
+  if (hasCliTextInput(args.footer)) overrides.footer = String(args.footer);
+  if (hasCliTextInput(args.theme)) overrides.theme = args.theme as ThemeName;
+  if (hasCliTextInput(args.icon)) overrides.icon = String(args.icon);
+  if (hasCliTextInput(args.label)) overrides.label = String(args.label);
+  if (hasCliTextInput(args.day)) overrides.day = String(args.day);
+  if (hasCliTextInput(args.serial)) overrides.serial = String(args.serial);
+
+  return overrides;
+}
+
 function parseTarget(raw: string): RenderTarget {
   const [templateRaw, themeRaw] = raw.split(':');
   if (!templateRaw || !BUILTIN_TEMPLATES.includes(templateRaw as BuiltinTemplate)) {
@@ -56,7 +120,7 @@ function parseTarget(raw: string): RenderTarget {
   }
 
   const template = templateRaw as BuiltinTemplate;
-  const theme = themeRaw?.trim() || undefined;
+  const theme = (themeRaw?.trim() || undefined) as ThemeName | undefined;
   const suffix = theme ? `${template}-${theme}` : template;
 
   return { template, theme, suffix };
@@ -76,8 +140,7 @@ async function resolveFontRegularPath(args: any) {
 }
 
 const TITLE_MANUAL_BREAK_HELP = [
-  '手动换行：在 JSON 的 title 里直接写换行符（推荐），CLI 会按你给的行来渲染。',
-  '例："title": "第一行\\n第二行\\n第三行"',
+  '手动换行：可直接传 --title "第一行\\n第二行\\n第三行"，也可在 JSON 的 title 里写换行。',
   '如果 title 里没有换行，则自动排版。',
 ].join(' ');
 
@@ -85,10 +148,14 @@ await yargs(hideBin(process.argv))
   .scriptName('postgen')
   .epilogue(TITLE_MANUAL_BREAK_HELP)
   .command(
-    'render',
-    '根据 JSON 数据渲染 PNG（title 支持手动换行）',
+    'render [inputTitle]',
+    '根据标题文本或 JSON 数据渲染 PNG（title 支持手动换行）',
     (cmd: any) =>
-      cmd
+      withInlineInputOptions(cmd)
+        .positional('inputTitle', {
+          type: 'string',
+          describe: '直接传标题文本；支持用 \\n 表示换行',
+        })
         .option('template', {
           type: 'string',
           choices: [...BUILTIN_TEMPLATES],
@@ -97,8 +164,11 @@ await yargs(hideBin(process.argv))
         })
         .option('data', {
           type: 'string',
-          demandOption: true,
-          describe: '输入 JSON 路径。title 支持手动换行；在 JSON 中直接写 "第一行\\n第二行" 即可',
+          describe: '输入 JSON 路径。与 --title 互斥',
+        })
+        .option('title', {
+          type: 'string',
+          describe: '直接传标题文本；支持用 \\n 表示换行。与 --data 互斥',
         })
         .option('out', {
           type: 'string',
@@ -134,13 +204,22 @@ await yargs(hideBin(process.argv))
     async (args: any) => {
       const template = args.template as BuiltinTemplate;
       const def = getTemplate(template);
-      const dataPath = path.resolve(String(args.data));
+      const inlineTitle = pickInlineTitle(args);
+      const hasData = hasCliTextInput(args.data);
+      const hasTitle = hasCliTextInput(inlineTitle);
+
+      if (hasData === hasTitle) {
+        throw new Error('render requires exactly one of --data or --title (or positional title)');
+      }
+
       const outPath = resolveOutPath(template, args.out, args.stableName);
       const width = Number(args.width ?? def.defaultWidth);
       const height = Number(args.height ?? def.defaultHeight);
       const fontRegularPath = await resolveFontRegularPath(args);
 
-      const input = await loadInput(dataPath, template);
+      const input = hasData
+        ? await loadInput(path.resolve(String(args.data)), template)
+        : buildInlineInput(template, String(inlineTitle), collectInlineInputOverrides(args));
       input.titleLayoutMode = args.titleLayoutMode as 'rule' | 'llm';
       await renderToPng({
         template,
@@ -157,13 +236,16 @@ await yargs(hideBin(process.argv))
   )
   .command(
     'render-many',
-    '用同一份数据批量渲染多张 PNG（title 支持手动换行）',
+    '用同一个标题或同一份数据批量渲染多张 PNG（title 支持手动换行）',
     (cmd: any) =>
-      cmd
+      withInlineInputOptions(cmd)
         .option('data', {
           type: 'string',
-          demandOption: true,
-          describe: '输入 JSON 路径。title 支持手动换行；同一份数据会被所有目标模板复用',
+          describe: '输入 JSON 路径。与 --title 互斥',
+        })
+        .option('title', {
+          type: 'string',
+          describe: '直接传标题文本；支持用 \\n 表示换行。与 --data 互斥',
         })
         .option('targets', {
           type: 'string',
@@ -193,7 +275,13 @@ await yargs(hideBin(process.argv))
           describe: '标题排版模式。若 title 已手动写了换行，优先按手动换行渲染；否则再按所选模式自动拆分',
         }),
     async (args: any) => {
-      const dataPath = path.resolve(String(args.data));
+      const hasData = hasCliTextInput(args.data);
+      const hasTitle = hasCliTextInput(args.title);
+
+      if (hasData === hasTitle) {
+        throw new Error('render-many requires exactly one of --data or --title');
+      }
+
       const fontRegularPath = await resolveFontRegularPath(args);
       const targets = String(args.targets || DEFAULT_BATCH_TARGETS.join(','))
         .split(',')
@@ -205,16 +293,19 @@ await yargs(hideBin(process.argv))
       const outDir = args.dir ? baseDir : makeBatchOutputDir(baseDir, String(args.label || 'batch'));
       await fs.mkdir(outDir, { recursive: true });
 
-      const raw = await fs.readFile(dataPath, 'utf8');
-      const baseJson = JSON.parse(raw);
       const results: Array<{ template: string; theme?: string; outPath: string }> = [];
 
       for (const target of targets) {
         const def = getTemplate(target.template);
-        const input = def.schema.parse({
-          ...baseJson,
-          ...(target.theme ? { theme: target.theme } : {}),
-        });
+        const input = hasData
+          ? def.schema.parse({
+              ...(await loadInput(path.resolve(String(args.data)), target.template)),
+              ...(target.theme ? { theme: target.theme } : {}),
+            })
+          : buildInlineInput(target.template, String(args.title), {
+              ...collectInlineInputOverrides(args),
+              ...(target.theme ? { theme: target.theme } : {}),
+            });
         const outPath = path.join(outDir, `${target.suffix}.png`);
         input.titleLayoutMode = args.titleLayoutMode as 'rule' | 'llm';
 

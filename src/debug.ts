@@ -1,9 +1,7 @@
-import path from 'node:path';
-import fs from 'node:fs/promises';
 import type { BuiltinTemplate, RenderInput } from './types.js';
-import { getTemplate } from './templates/registry.js';
 import { getTemplateTitleLayoutProfile } from './templates/title-engine.js';
 import { debugLayoutTitle, layoutTitle, type TitleLayoutSpec } from './templates/text-layout.js';
+import { buildInlineInput, loadInput } from './input.js';
 
 export interface TitleDebugProfile {
   template: BuiltinTemplate;
@@ -45,9 +43,7 @@ export function getTitleDebugProfile(template: BuiltinTemplate, input: RenderInp
 }
 
 export async function loadTemplateInput(dataPath: string, template: BuiltinTemplate): Promise<RenderInput> {
-  const raw = await fs.readFile(path.resolve(dataPath), 'utf8');
-  const json = JSON.parse(raw);
-  return getTemplate(template).schema.parse(json);
+  return loadInput(dataPath, template);
 }
 
 function summarizeLayout(result: ReturnType<typeof layoutTitle>): TitleDebugSummary {
@@ -67,10 +63,6 @@ function summarizeLayout(result: ReturnType<typeof layoutTitle>): TitleDebugSumm
   };
 }
 
-function normalizeInlineTitle(title: string) {
-  return String(title ?? '').replace(/\\n/g, '\n').trim();
-}
-
 export function inspectTitleLayout(template: BuiltinTemplate, input: RenderInput, candidateLimit = 5) {
   const profile = getTitleDebugProfile(template, input);
   const result = layoutTitle(profile.title, {
@@ -87,7 +79,7 @@ export function inspectTitleLayout(template: BuiltinTemplate, input: RenderInput
 }
 
 export function inspectTitleLayoutByTitle(template: BuiltinTemplate, title: string, candidateLimit = 5) {
-  return inspectTitleLayout(template, { title: normalizeInlineTitle(title) }, candidateLimit);
+  return inspectTitleLayout(template, buildInlineInput(template, title), candidateLimit);
 }
 
 export function inspectTitleLayoutDebug(template: BuiltinTemplate, input: RenderInput, candidateLimit = 5) {

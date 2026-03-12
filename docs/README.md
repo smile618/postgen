@@ -1,9 +1,9 @@
 # postgen Docs
 
-`postgen` 是一个模板驱动的 **JSON -> PNG** 渲染工具。
+`postgen` 是一个模板驱动的 **title / JSON -> PNG** 渲染工具。
 
 核心目标很简单：
-- 输入一个 JSON 文件
+- 输入一个标题，或一个 JSON 文件
 - 选择一个模板
 - 输出一张 PNG 图片
 

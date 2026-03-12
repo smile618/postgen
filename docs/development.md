@@ -21,6 +21,8 @@
 长期保持：
 
 ```bash
+postgen render --template <template> --title "第一行\n第二行"
+# 或
 postgen render --template <template> --data <json-file>
 ```
 

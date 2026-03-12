@@ -13,3 +13,4 @@ fonts/custom/*
 preview.png
 *.log
 .DS_Store
+*.png

@@ -1,19 +1,11 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
+import fs from 'node:fs/promises';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 import type { BuiltinTemplate, RenderInput } from './types.js';
 import { getTemplate } from './templates/registry.js';
 import { resolveTemplateTitleLayoutAsync } from './templates/title-layout-service.js';
-
 const TWEMOJI_ASSET_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg';
-
-export async function loadInput(dataPath: string, template: BuiltinTemplate): Promise<RenderInput> {
-  const raw = await fs.readFile(dataPath, 'utf8');
-  const json = JSON.parse(raw);
-  const def = getTemplate(template);
-  return def.schema.parse(json);
-}
 
 async function loadFont(fontPath: string) {
   const buf = await fs.readFile(fontPath);

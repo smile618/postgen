@@ -1,9 +1,12 @@
-import * as budoux from 'budoux';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { loadDefaultSimplifiedChineseParser } = require('budoux') as typeof import('budoux');
 
 const punctuation = new Set(Array.from('，。！？；：、,.!?;:'));
 const asciiWord = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const emojiRegex = /\p{Extended_Pictographic}/u;
-const zhParser = budoux.loadDefaultSimplifiedChineseParser();
+const zhParser = loadDefaultSimplifiedChineseParser();
 
 export interface TitleLayoutBox {
   width: number;
